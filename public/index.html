@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support assistant</title>
+<!--
+  Chat widget. One self-contained file: no build step, no external scripts.
+
+  Re-theming: every colour is a CSS custom property. At load, the page fetches
+  /v1/config/public and applies the tenant's `theme` (light) and `themeDark` values, so
+  a client re-brands by editing src/config/tenant.ts only. The defaults below are the
+  gomaxify.ai palette and are used until the config arrives.
+
+  All chat text is inserted with textContent, never innerHTML, so nothing a customer or
+  the model writes can inject markup.
+-->
+<style>
+  :root {
+    --bg:#FAFAF7; --card:#FFFFFF; --ink:#13221B; --muted:#5A6472;
+    --line:rgba(19,34,27,0.13); --line-soft:rgba(19,34,27,0.07);
+    --brand:#0F2B21; --brand-ink:#EAF3EE; --accent:#00D084; --accent-text:#067A50;
+    --mint:#CFF3E1; --sky:#D8E9FB; --lilac:#E6DFF6; --butter:#FBEFC9; --oat:#F4EFE6;
+    --info-text:#1D5FA8; --warn-text:#7A5200; --danger-text:#B23030; --danger-tint:rgba(255,92,92,0.14);
+    --font: "Figtree", "Sora", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0F2B21; --card:#16352A; --ink:#EAF3EE; --muted:#9DB3A9;
+      --line:rgba(234,243,238,0.15); --line-soft:rgba(234,243,238,0.08);
+      --brand:#0A1F18; --brand-ink:#EAF3EE; --accent:#00D084; --accent-text:#2FE0A2;
+      --mint:#1C4636; --sky:#1C3A52; --lilac:#332C46; --butter:#42391C; --oat:#2E3128;
+      --info-text:#4DA6FF; --warn-text:#FFB020; --danger-text:#FF8A8A; --danger-tint:rgba(255,92,92,0.15);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--accent-text); }
+
+  .app { display: grid; grid-template-rows: auto 1fr; height: 100dvh; }
+  header { background: var(--brand); color: var(--brand-ink); padding: 12px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .logo { width: 30px; height: 30px; border-radius: 9px; background: var(--accent); display: grid; place-items: center; color: #0F2B21; font-weight: 800; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 700; letter-spacing: .1px; }
+  .pill { font: 600 11px/1 var(--mono); padding: 5px 8px; border-radius: 999px; background: rgba(0,208,132,.18); color: #2FE0A2; text-transform: uppercase; letter-spacing: .6px; }
+  header .spacer { flex: 1; }
+  header a.link { color: var(--brand-ink); opacity: .85; text-decoration: none; font-size: 13px; border: 1px solid rgba(234,243,238,.25); padding: 6px 10px; border-radius: 9px; }
+  header a.link:hover { opacity: 1; border-color: var(--accent); }
+
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; padding: 16px; min-height: 0; max-width: 1180px; width: 100%; margin: 0 auto; }
+  .chat { display: grid; grid-template-rows: 1fr auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); min-height: 0; overflow: hidden; }
+  .messages { overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .empty { margin: auto; text-align: center; color: var(--muted); max-width: 380px; }
+  .empty b { color: var(--ink); display: block; font-size: 17px; margin-bottom: 4px; }
+
+  .msg { max-width: 82%; display: flex; flex-direction: column; gap: 6px; }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.bot { align-self: flex-start; }
+  .bubble { padding: 10px 13px; border-radius: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .user .bubble { background: var(--brand); color: var(--brand-ink); border-bottom-right-radius: 4px; }
+  .bot .bubble { background: var(--oat); border: 1px solid var(--line-soft); border-bottom-left-radius: 4px; }
+  .meta { font: 11px/1.3 var(--mono); color: var(--muted); }
+  .typing { color: var(--muted); font-style: italic; }
+
+  /* One receipt per action the agent actually took. Colour says what kind. */
+  .receipt { border-radius: 12px; padding: 9px 12px; border: 1px solid var(--line); font-size: 13.5px; min-width: 240px; }
+  .receipt .top { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+  .receipt .kind { text-transform: capitalize; }
+  .receipt .amount { margin-left: auto; font-family: var(--mono); }
+  .receipt .sub { color: var(--muted); font: 11.5px/1.5 var(--mono); margin-top: 3px; }
+  .receipt .detail { margin-top: 3px; }
+  .receipt.refund { background: var(--mint); }
+  .receipt.exchange { background: var(--sky); }
+  .receipt.cancellation { background: var(--butter); }
+  .receipt.escalation { background: var(--lilac); }
+  .receipt.repeat { background: transparent; border-style: dashed; }
+  .chip { font: 600 10.5px/1 var(--mono); padding: 4px 7px; border-radius: 999px; border: 1px solid var(--line); text-transform: uppercase; letter-spacing: .5px; }
+  .chip.P1 { background: var(--danger-tint); color: var(--danger-text); border-color: transparent; }
+  .chip.P2 { background: var(--butter); color: var(--warn-text); border-color: transparent; }
+  .chip.P3 { background: var(--sky); color: var(--info-text); border-color: transparent; }
+  .chip.repeat { background: var(--oat); color: var(--muted); }
+  .notice { font: 11.5px/1.4 var(--mono); color: var(--warn-text); }
+
+  form.composer { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--line); background: var(--card); }
+  textarea { flex: 1; resize: none; border: 1px solid var(--line); background: var(--bg); border-radius: 11px; padding: 10px 12px; min-height: 44px; max-height: 140px; outline: none; }
+  textarea:focus, select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,208,132,.18); }
+  .send { background: var(--accent); color: #0F2B21; border: 0; border-radius: 11px; padding: 0 18px; font-weight: 700; cursor: pointer; min-height: 44px; }
+  .send:disabled { opacity: .5; cursor: not-allowed; }
+
+  aside { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; min-height: 0; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+  .panel h2 { margin: 0 0 8px; font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .8px; color: var(--muted); font-weight: 600; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  select, input[type=text], input[type=email] { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 9px 10px; outline: none; }
+  .hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+  .toggle { display: flex; gap: 9px; align-items: flex-start; font-size: 13.5px; color: var(--ink); margin: 6px 0; cursor: pointer; }
+  .toggle input { margin-top: 3px; accent-color: var(--accent); }
+  .tries { display: flex; flex-wrap: wrap; gap: 6px; }
+  .try { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 10px; font-size: 12.5px; cursor: pointer; text-align: left; }
+  .try:hover { border-color: var(--accent); }
+  .about ul { margin: 6px 0 0; padding-left: 18px; font-size: 13.5px; }
+  .about li { margin: 3px 0; }
+  details.panel > summary { cursor: pointer; font-weight: 700; list-style: none; }
+  details.panel > summary::-webkit-details-marker { display: none; }
+  details.panel > summary::after { content: "+"; float: right; color: var(--muted); }
+  details.panel[open] > summary::after { content: "–"; }
+  .hidden { display: none !important; }
+
+  @media (max-width: 860px) {
+    .app { height: auto; min-height: 100dvh; }
+    main { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+    aside { order: -1; overflow: visible; }
+    .chat { height: 72dvh; }
+    .msg { max-width: 94%; }
+    .about-wide { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo" id="logo">T</div>
+    <h1 id="brandName">Support</h1>
+    <span class="pill">AI assistant</span>
+    <span class="spacer"></span>
+    <a class="link" href="/console">Ops console</a>
+  </header>
+
+  <main>
+    <section class="chat" aria-label="Conversation">
+      <div class="messages" id="messages" aria-live="polite">
+        <div class="empty" id="empty">
+          <b id="emptyTitle">Hi, how can I help?</b>
+          Ask about an order, a return, an exchange or a cancellation. You are chatting with an AI assistant;
+          a person steps in whenever a request needs one.
+        </div>
+      </div>
+      <form class="composer" id="composer">
+        <textarea id="input" rows="1" maxlength="2000" placeholder="Type your message…" aria-label="Message"></textarea>
+        <button class="send" id="send" type="submit">Send</button>
+      </form>
+    </section>
+
+    <aside>
+      <div class="panel">
+        <h2>Who is chatting</h2>
+        <label for="identity">Customer (set by the host app, not by the chat)</label>
+        <select id="identity"></select>
+        <div id="customIdentity" class="hidden" style="margin-top:8px">
+          <label for="customValue">Customer ID or guest email</label>
+          <input type="text" id="customValue" placeholder="C001 or name@example.com" autocomplete="off">
+        </div>
+        <div class="hint" id="identityNote"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Try asking</h2>
+        <div class="tries" id="tries"></div>
+      </div>
+
+      <div class="panel" id="faultPanel">
+        <h2>Failure drills</h2>
+        <label class="toggle"><input type="checkbox" id="faultOrders"> <span>Order system down <span class="hint" style="display:block;margin:0">Every order lookup fails. The assistant must not guess or pay.</span></span></label>
+        <label class="toggle"><input type="checkbox" id="faultPayments"> <span>Payment gateway down <span class="hint" style="display:block;margin:0">Refunds fail. The assistant must not claim success.</span></span></label>
+      </div>
+
+      <details class="panel about" open>
+        <summary>About this assistant</summary>
+        <ul>
+          <li><b>It is an AI</b>, not a person. It can be wrong; every action comes with a reference you can quote.</li>
+          <li><b>It can</b> answer questions about your orders, products and policies, and carry out eligible refunds, exchanges and cancellations.</li>
+          <li><b>A person decides</b> fault claims, larger refunds and anything unusual. You get a ticket reference and a reply time.</li>
+          <li><b>It cannot</b> change who you are signed in as, set refund amounts, or override store policy.</li>
+          <li><b>Your data:</b> your messages and order details are processed to handle your request, including by our AI model provider. Card and ID numbers are removed automatically; please do not send them.</li>
+          <li><b>Talk to a person:</b> just ask for one, or email <a id="supportEmail" href="#">support</a>.</li>
+        </ul>
+        <div class="hint" id="policyLine"></div>
+      </details>
+    </aside>
+  </main>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const state = { config: null, busy: false, symbol: "S$" };
+
+  /** Tiny DOM helper. Children are nodes or strings; strings always become text nodes. */
+  function el(tag, attrs, ...children) {
+    const node = document.createElement(tag);
+    for (const [key, value] of Object.entries(attrs || {})) {
+      if (key === "class") node.className = value;
+      else if (key === "text") node.textContent = value;
+      else node.setAttribute(key, value);
+    }
+    for (const child of children) {
+      if (child === null || child === undefined || child === "") continue;
+      node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+    }
+    return node;
+  }
+
+  /** Applies the tenant's colours. This is the whole theming mechanism. */
+  function applyTheme(config) {
+    const toCss = (vars) => Object.entries(vars || {})
+      .filter(([name, value]) => /^--[a-z0-9-]+$/i.test(name) && !/[;{}<>]/.test(String(value)))
+      .map(([name, value]) => `${name}:${value}`).join(";");
+    const style = document.createElement("style");
+    style.textContent = `:root{${toCss(config.theme)}}@media (prefers-color-scheme: dark){:root{${toCss(config.themeDark)}}}`;
+    document.head.append(style);
+  }
+
+  const TRIES = [
+    "What is your return policy?",
+    "Where is my order?",
+    "I'd like to return an item, it doesn't fit.",
+    "Please cancel my order.",
+    "My item arrived damaged, the seam is torn.",
+    "Can I swap it for a different size?",
+    "I want to speak to a person.",
+  ];
+
+  function currentIdentity() {
+    const value = $("identity").value;
+    if (value === "custom") {
+      const typed = $("customValue").value.trim();
+      if (!typed) return null;
+      return typed.includes("@") ? { guest_email: typed, label: typed } : { customer_id: typed, label: typed };
+    }
+    if (value.startsWith("guest:")) return { guest_email: value.slice(6), label: value.slice(6) };
+    return { customer_id: value, label: value };
+  }
+
+  function describeIdentity() {
+    const value = $("identity").value;
+    $("customIdentity").classList.toggle("hidden", value !== "custom");
+    const customer = (state.config?.demo.customers || []).find((c) => c.id === value);
+    $("identityNote").textContent = customer
+      ? `${customer.note} State is kept per customer between messages.`
+      : value.startsWith("guest:")
+        ? "Guest checkout: identified by email only."
+        : "Type any customer ID or guest email.";
+  }
+
+  function clearThread() {
+    const messages = $("messages");
+    messages.replaceChildren($("empty") || el("div", { class: "empty", id: "empty", text: "Start a conversation." }));
+  }
+
+  function addMessage(role, text) {
+    $("empty")?.remove();
+    const bubble = el("div", { class: "bubble", text });
+    const message = el("div", { class: `msg ${role}` }, bubble);
+    $("messages").append(message);
+    $("messages").scrollTop = $("messages").scrollHeight;
+    return message;
+  }
+
+  /** A coloured card for one action. `repeat` marks an earlier action recognised again. */
+  function receipt(action, repeat) {
+    const top = el("div", { class: "top" },
+      el("span", { class: "kind", text: action.type === "escalation" ? "Sent to a person" : action.type }),
+      action.priority ? el("span", { class: `chip ${action.priority}`, text: action.priority }) : null,
+      repeat ? el("span", { class: "chip repeat", text: "Repeat recognised" }) : null,
+      action.amount ? el("span", { class: "amount", text: action.amount }) : null,
+    );
+    const facts = [action.id, action.status, action.orderId, action.lineId, action.category, action.reference]
+      .filter(Boolean).join(" · ");
+    return el("div", { class: `receipt ${action.type}${repeat ? " repeat" : ""}` },
+      top,
+      el("div", { class: "detail", text: repeat ? "Already on record. Nothing new was done." : action.detail }),
+      el("div", { class: "sub", text: facts }),
+    );
+  }
+
+  function renderResult(message, result) {
+    message.querySelector(".bubble").classList.remove("typing");
+    message.querySelector(".bubble").textContent = result.reply;
+    for (const action of result.actions || []) message.append(receipt(action, false));
+    for (const action of result.duplicatesRecognised || []) message.append(receipt(action, true));
+    if ((result.actions || []).length === 0 && (result.duplicatesRecognised || []).length === 0) {
+      message.append(el("div", { class: "meta", text: "No action taken" }));
+    }
+    const notices = (result.notices || []).filter((n) => !n.startsWith("injection_signals"));
+    if (notices.length) message.append(el("div", { class: "notice", text: `Notices: ${notices.join(" · ")}` }));
+    if (result.traceId) {
+      const link = el("a", { href: `/console?trace=${encodeURIComponent(result.traceId)}`, text: `trace ${result.traceId.slice(0, 8)}` });
+      message.append(el("div", { class: "meta" }, "Audit ", link));
+    }
+    $("messages").scrollTop = $("messages").scrollHeight;
+  }
+
+  async function send(text) {
+    const identity = currentIdentity();
+    if (!identity) { $("customValue").focus(); return; }
+    if (!text.trim() || state.busy) return;
+    state.busy = true;
+    $("send").disabled = true;
+    addMessage("user", text);
+    const pending = addMessage("bot", "Working on it…");
+    pending.querySelector(".bubble").classList.add("typing");
+
+    const faults = [];
+    if ($("faultOrders").checked) faults.push("order-lookup");
+    if ($("faultPayments").checked) faults.push("payment");
+    const headers = { "content-type": "application/json" };
+    if (faults.length) headers["x-fault-injection"] = faults.join(",");
+
+    try {
+      const response = await fetch("/v1/chat", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ customer_id: identity.customer_id, guest_email: identity.guest_email, message: text, channel: "web-demo" }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        renderResult(pending, { reply: body.message || `Sorry, something went wrong (${response.status}). Please try again.`, actions: [], notices: [body.error || "error"] });
+      } else {
+        renderResult(pending, body);
+      }
+    } catch (err) {
+      renderResult(pending, { reply: "Sorry, I couldn't reach the server. Please check your connection and try again.", actions: [], notices: ["network_error"] });
+    } finally {
+      state.busy = false;
+      $("send").disabled = false;
+      $("input").focus();
+    }
+  }
+
+  $("composer").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const text = $("input").value;
+    $("input").value = "";
+    $("input").style.height = "auto";
+    send(text);
+  });
+  $("input").addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); $("composer").requestSubmit(); }
+  });
+  $("input").addEventListener("input", () => {
+    $("input").style.height = "auto";
+    $("input").style.height = Math.min($("input").scrollHeight, 140) + "px";
+  });
+  $("identity").addEventListener("change", () => { describeIdentity(); clearThread(); });
+
+  for (const text of TRIES) {
+    const button = el("button", { class: "try", type: "button", text });
+    button.addEventListener("click", () => send(text));
+    $("tries").append(button);
+  }
+
+  async function init() {
+    let config;
+    try {
+      config = await (await fetch("/v1/config/public")).json();
+    } catch {
+      config = { brand: { name: "Support", assistantName: "Assistant", supportEmail: "" }, theme: {}, themeDark: {}, locale: { currencySymbol: "S$" }, policy: {}, demo: { enabled: false, customers: [], guests: [] } };
+    }
+    state.config = config;
+    state.symbol = config.locale?.currencySymbol || "S$";
+    applyTheme(config);
+    document.title = `${config.brand.name} · Support`;
+    $("brandName").textContent = config.brand.name;
+    $("logo").textContent = (config.brand.name || "S").trim().charAt(0).toUpperCase();
+    $("emptyTitle").textContent = `Hi, I'm ${config.brand.assistantName}. How can I help?`;
+    if (config.brand.supportEmail) {
+      $("supportEmail").textContent = config.brand.supportEmail;
+      $("supportEmail").href = `mailto:${config.brand.supportEmail}`;
+    }
+    if (config.policy?.returnWindowDays) {
+      $("policyLine").textContent = `Policy ${config.policy.version}: returns within ${config.policy.returnWindowDays} days of delivery; fault claims considered for ${config.policy.statutoryDefectWindowMonths} months.`;
+    }
+
+    const select = $("identity");
+    for (const customer of config.demo.customers || []) {
+      select.append(el("option", { value: customer.id, text: `${customer.id} · ${customer.name}` }));
+    }
+    for (const email of config.demo.guests || []) {
+      select.append(el("option", { value: `guest:${email}`, text: `Guest · ${email}` }));
+    }
+    select.append(el("option", { value: "custom", text: "Other customer ID or guest email…" }));
+    $("faultPanel").classList.toggle("hidden", !config.demo.faultInjection);
+    describeIdentity();
+    if (window.matchMedia("(max-width: 860px)").matches) document.querySelector("details.about").removeAttribute("open");
+  }
+  init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+// Cloudflare Workers configuration.
+// Deploy with `npm run deploy` (scripts/deploy.mjs), which creates the D1 database if
+// needed, writes its ID below, deploys, and uploads secrets from .env.
+// Secrets (LLM_API_KEY, ADMIN_API_KEY, optional CHANNEL_API_KEY) are NEVER put in this file.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "maxify-support-agent",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-10-01",
+
+  // Serverless SQLite: conversation state, action ledger, review queue, audit log.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "maxify-support-agent",
+      "database_id": "cc7b5588-cd65-47ce-adac-da72c926d806"
+    }
+  ],
+
+  // The chat page and ops console are static files. Only /v1/* runs the Worker.
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/v1/*"]
+  },
+
+  "vars": {
+    // Model provider (not secret). Any OpenAI-compatible endpoint works.
+    "LLM_PROVIDER": "openai-compatible",
+    "LLM_BASE_URL": "https://api.groq.com/openai/v1",
+    "LLM_MODEL": "openai/gpt-oss-120b",
+    // Demo conveniences. Set both to "false" for a real deployment.
+    "PUBLIC_DEMO": "true",
+    "ALLOW_FAULT_INJECTION": "true",
+    // Kill switch: "false" sends every refund, exchange and cancellation to a human.
+    "MONEY_ACTIONS_ENABLED": "true"
+  },
+
+  "observability": { "enabled": true }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "maxify-support-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Customer-support agent for an apparel retailer: answers questions and handles returns, refunds, exchanges and cancellations behind a deterministic money gate with human approval.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "agent": "tsx src/cli.ts",
+    "data": "tsx src/cli.ts --show-data",
+    "reset": "tsx src/cli.ts --reset",
+    "queue": "tsx src/cli.ts --queue",
+    "audit:verify": "tsx src/cli.ts --audit-verify",
+    "reconcile": "tsx src/cli.ts --reconcile",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "eval": "tsx evals/run.ts",
+    "eval:gate": "tsx evals/run.ts --suite gate",
+    "eval:adversarial": "tsx evals/run.ts --suite adversarial",
+    "eval:live": "tsx evals/run.ts --suite live",
+    "dev": "wrangler dev",
+    "deploy": "node scripts/deploy.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "dependencies": {
+    "hono": "^4.13.19",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.164.0"
+  }
+}

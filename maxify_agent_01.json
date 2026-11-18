@@ -1,0 +1,396 @@
+{
+  "version": "32.7.4",
+  "data": "<mxfile host=\"app.diagrams.net\"><diagram name=\"Page-1\" id=\"u-5jSHulRnwbaWd04wu2\"><mxGraphModel dx=\"388\" dy=\"455\" grid=\"1\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"1\" pageScale=\"1\" pageWidth=\"850\" pageHeight=\"1100\" math=\"0\" shadow=\"0\"><root><mxCell id=\"0\"/><mxCell id=\"1\" parent=\"0\"/><mxCell id=\"c2\" parent=\"1\" style=\"text;html=1;fontSize=20;fontStyle=1;align=left;verticalAlign=middle;\" value=\"Customer-Support Agent (Apparel) — Production Architecture for Real-Money Actions\" vertex=\"1\"><mxGeometry height=\"40\" width=\"1460\" x=\"20\" y=\"10\" as=\"geometry\"/></mxCell><mxCell id=\"c3\" parent=\"1\" style=\"swimlane;html=1;startSize=26;fontSize=13;fontStyle=1;align=left;spacingLeft=10;fillColor=#f5f5f5;strokeColor=#666666;swimlaneFillColor=#ffffff;rounded=1;\" value=\"1. Entry &amp;amp; Identity\" vertex=\"1\"><mxGeometry height=\"150\" width=\"1160\" x=\"20\" y=\"60\" as=\"geometry\"/></mxCell><mxCell id=\"c4\" parent=\"c3\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;spacing=6;\" value=\"&lt;b&gt;Channel: CLI / API&lt;/b&gt;&lt;br&gt;One command:&lt;br&gt;customer ID &lt;i&gt;or&lt;/i&gt; guest email + message\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"30\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c5\" parent=\"c3\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;spacing=6;\" value=\"&lt;b&gt;Identity &amp;amp; AuthZ&lt;/b&gt;&lt;br&gt;Resolve customer / guest email.&lt;br&gt;Unknown identity → clarify.&lt;br&gt;All data access scoped to this identity\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"305\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c6\" parent=\"c3\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;spacing=6;\" value=\"&lt;b&gt;Input Guardrails&lt;/b&gt;&lt;br&gt;Prompt-injection screening,&lt;br&gt;PII redaction, rate limiting,&lt;br&gt;message size limits\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"580\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c7\" parent=\"c3\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;spacing=6;\" value=\"&lt;b&gt;Session Loader&lt;/b&gt;&lt;br&gt;Load conversation history + prior&lt;br&gt;actions from State Store so repeat&lt;br&gt;requests are recognised\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"855\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c36\" edge=\"1\" parent=\"c3\" source=\"c4\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c5\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c37\" edge=\"1\" parent=\"c3\" source=\"c5\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c6\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c38\" edge=\"1\" parent=\"c3\" source=\"c6\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c7\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c8\" parent=\"1\" style=\"swimlane;html=1;startSize=26;fontSize=13;fontStyle=1;align=left;spacingLeft=10;fillColor=#fff2cc;strokeColor=#d6b656;swimlaneFillColor=#ffffff;rounded=1;\" value=\"2. Reasoning — LLM (untrusted: proposes, never executes money moves)\" vertex=\"1\"><mxGeometry height=\"150\" width=\"1160\" x=\"20\" y=\"230\" as=\"geometry\"/></mxCell><mxCell id=\"c9\" parent=\"c8\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;spacing=6;\" value=\"&lt;b&gt;Policy &amp;amp; Knowledge&lt;/b&gt;&lt;br&gt;Versioned policies, product catalog,&lt;br&gt;ASSUMPTIONS.md decisions&lt;br&gt;(grounding, no invented policy)\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"30\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c10\" parent=\"c8\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;spacing=6;\" value=\"&lt;b&gt;Agent Orchestrator (LLM tool-calling loop)&lt;/b&gt;&lt;br&gt;Understands intent, gathers facts via tools, drafts reply.&lt;br&gt;Model API key from environment variable. Bounded steps, timeouts,&lt;br&gt;temperature 0, structured tool calls only\" vertex=\"1\"><mxGeometry height=\"100\" width=\"525\" x=\"305\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c11\" parent=\"c8\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;spacing=6;\" value=\"&lt;b&gt;Agent Outcomes&lt;/b&gt;&lt;br&gt;Answer · Clarify (missing order / item /&lt;br&gt;reason) · Propose action · Escalate\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"855\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c40\" edge=\"1\" parent=\"c8\" source=\"c9\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c10\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c41\" edge=\"1\" parent=\"c8\" source=\"c10\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c11\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c12\" parent=\"1\" style=\"swimlane;html=1;startSize=26;fontSize=13;fontStyle=1;align=left;spacingLeft=10;fillColor=#dae8fc;strokeColor=#6c8ebf;swimlaneFillColor=#ffffff;rounded=1;\" value=\"3. Tool Layer (typed schemas, validated arguments)\" vertex=\"1\"><mxGeometry height=\"150\" width=\"1160\" x=\"20\" y=\"400\" as=\"geometry\"/></mxCell><mxCell id=\"c13\" parent=\"c12\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;spacing=6;\" value=\"&lt;b&gt;Read Tools&lt;/b&gt;&lt;br&gt;lookup_order · get_customer · get_product · get_policy&lt;br&gt;Ownership-checked, timeouts + limited retries.&lt;br&gt;&lt;b&gt;Fault injection:&lt;/b&gt; env flag (e.g. ORDER_LOOKUP_FAIL=1) forces lookup failure&lt;br&gt;→ fail closed: no money action, apologise + escalate\" vertex=\"1\"><mxGeometry height=\"100\" width=\"525\" x=\"30\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c14\" parent=\"c12\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#dae8fc;strokeColor=#6c8ebf;spacing=6;\" value=\"&lt;b&gt;Write Tools (proposals only)&lt;/b&gt;&lt;br&gt;propose_refund · propose_exchange · propose_cancellation · escalate_to_human&lt;br&gt;Each call is a &lt;i&gt;request&lt;/i&gt; handed to the Money Gate —&lt;br&gt;the LLM cannot call the payment system directly\" vertex=\"1\"><mxGeometry height=\"100\" width=\"525\" x=\"580\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c15\" parent=\"1\" style=\"swimlane;html=1;startSize=26;fontSize=13;fontStyle=1;align=left;spacingLeft=10;fillColor=#f8cecc;strokeColor=#b85450;swimlaneFillColor=#ffffff;rounded=1;\" value=\"4. Deterministic Money Gate — plain code, not LLM (fail closed)\" vertex=\"1\"><mxGeometry height=\"170\" width=\"1160\" x=\"20\" y=\"570\" as=\"geometry\"/></mxCell><mxCell id=\"c16\" parent=\"c15\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;spacing=6;\" value=\"&lt;b&gt;Policy Engine&lt;/b&gt;&lt;br&gt;• Order belongs to this customer&lt;br&gt;• Return ≤ 30 days from delivery&lt;br&gt;• Sale item → exchange only;&lt;br&gt;&amp;nbsp;&amp;nbsp;refund only if defective&lt;br&gt;• Cancel only before shipment\" vertex=\"1\"><mxGeometry height=\"120\" width=\"250\" x=\"30\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c17\" parent=\"c15\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;spacing=6;\" value=\"&lt;b&gt;Risk &amp;amp; Limits&lt;/b&gt;&lt;br&gt;• Amount ≤ paid − already refunded&lt;br&gt;&amp;nbsp;&amp;nbsp;(computed from order, never from LLM)&lt;br&gt;• Refund cap / velocity limits&lt;br&gt;• Unverified defect claim, high value,&lt;br&gt;&amp;nbsp;&amp;nbsp;abuse signals → human\" vertex=\"1\"><mxGeometry height=\"120\" width=\"250\" x=\"305\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c18\" parent=\"c15\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;spacing=6;\" value=\"&lt;b&gt;Idempotency &amp;amp; Duplicate Check&lt;/b&gt;&lt;br&gt;Key = order + item + action.&lt;br&gt;Already done → return existing&lt;br&gt;result, never pay twice.&lt;br&gt;Conflicting prior action → deny\" vertex=\"1\"><mxGeometry height=\"120\" width=\"250\" x=\"580\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c19\" parent=\"c15\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f8cecc;strokeColor=#b85450;spacing=6;\" value=\"&lt;b&gt;Decision&lt;/b&gt;&lt;br&gt;&lt;b&gt;ALLOW&lt;/b&gt; → execute&lt;br&gt;&lt;b&gt;DENY&lt;/b&gt; → explain + offer allowed&lt;br&gt;alternative (e.g. exchange)&lt;br&gt;&lt;b&gt;NEEDS HUMAN&lt;/b&gt; → escalate\" vertex=\"1\"><mxGeometry height=\"120\" width=\"250\" x=\"855\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c45\" edge=\"1\" parent=\"c15\" source=\"c16\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c17\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c46\" edge=\"1\" parent=\"c15\" source=\"c17\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c18\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c47\" edge=\"1\" parent=\"c15\" source=\"c18\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c19\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c20\" parent=\"1\" style=\"swimlane;html=1;startSize=26;fontSize=13;fontStyle=1;align=left;spacingLeft=10;fillColor=#d5e8d4;strokeColor=#82b366;swimlaneFillColor=#ffffff;rounded=1;\" value=\"5. Execution &amp;amp; State\" vertex=\"1\"><mxGeometry height=\"150\" width=\"1160\" x=\"20\" y=\"760\" as=\"geometry\"/></mxCell><mxCell id=\"c21\" parent=\"c20\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;spacing=6;\" value=\"&lt;b&gt;State Store / Ledger (durable DB)&lt;/b&gt;&lt;br&gt;Sessions, orders, actions ledger,&lt;br&gt;idempotency keys, escalations.&lt;br&gt;Persists between calls\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"30\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c22\" parent=\"c20\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;spacing=6;\" value=\"&lt;b&gt;Payment Gateway + OMS Adapters&lt;/b&gt;&lt;br&gt;Refund to original payment method,&lt;br&gt;create exchange, cancel order.&lt;br&gt;Idempotency key passed downstream\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"305\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c23\" parent=\"c20\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#d5e8d4;strokeColor=#82b366;spacing=6;\" value=\"&lt;b&gt;Action Executor&lt;/b&gt;&lt;br&gt;Single transactional path for refund /&lt;br&gt;exchange / cancellation. Write ledger&lt;br&gt;intent → call adapter → commit result\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"580\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c24\" parent=\"c20\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#ffe6cc;strokeColor=#d79b00;spacing=6;\" value=\"&lt;b&gt;Human Review Queue&lt;/b&gt;&lt;br&gt;Ticket with full context + reason.&lt;br&gt;Human approves / rejects;&lt;br&gt;customer told it is escalated\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"855\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c50\" edge=\"1\" parent=\"c20\" source=\"c23\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c22\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c51\" edge=\"1\" parent=\"c20\" source=\"c22\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c21\" value=\"record result\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c25\" parent=\"1\" style=\"swimlane;html=1;startSize=26;fontSize=13;fontStyle=1;align=left;spacingLeft=10;fillColor=#f5f5f5;strokeColor=#666666;swimlaneFillColor=#ffffff;rounded=1;\" value=\"6. Response\" vertex=\"1\"><mxGeometry height=\"130\" width=\"1160\" x=\"20\" y=\"930\" as=\"geometry\"/></mxCell><mxCell id=\"c26\" parent=\"c25\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;spacing=6;\" value=\"&lt;b&gt;Output Guardrail&lt;/b&gt;&lt;br&gt;Reply must match the ledger: never claim a refund / cancellation that was not executed.&lt;br&gt;No leaked data of other customers, no invented policy. Mismatch → safe fallback + escalate\" vertex=\"1\"><mxGeometry height=\"80\" width=\"525\" x=\"30\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c27\" parent=\"c25\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;spacing=6;\" value=\"&lt;b&gt;Printed Result&lt;/b&gt;&lt;br&gt;&lt;b&gt;Reply&lt;/b&gt; + &lt;b&gt;Action taken&lt;/b&gt;: refund | exchange | cancellation | escalation | none&lt;br&gt;(with action ID and amount)\" vertex=\"1\"><mxGeometry height=\"80\" width=\"525\" x=\"580\" y=\"38\" as=\"geometry\"/></mxCell><mxCell id=\"c55\" edge=\"1\" parent=\"c25\" source=\"c26\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;\" target=\"c27\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c28\" parent=\"1\" style=\"swimlane;html=1;startSize=26;fontSize=13;fontStyle=1;fillColor=#e1d5e7;strokeColor=#9673a6;swimlaneFillColor=#ffffff;rounded=1;\" value=\"Cross-cutting Controls\" vertex=\"1\"><mxGeometry height=\"1000\" width=\"280\" x=\"1200\" y=\"60\" as=\"geometry\"/></mxCell><mxCell id=\"c29\" parent=\"c28\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;spacing=6;\" value=\"&lt;b&gt;Audit Log (append-only)&lt;/b&gt;&lt;br&gt;Every message, tool call, gate decision and money action, with policy version and reason codes\" vertex=\"1\"><mxGeometry height=\"110\" width=\"250\" x=\"15\" y=\"40\" as=\"geometry\"/></mxCell><mxCell id=\"c30\" parent=\"c28\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;spacing=6;\" value=\"&lt;b&gt;Observability &amp;amp; Alerts&lt;/b&gt;&lt;br&gt;Traces, metrics, alerts on refund volume, deny / escalation rate, tool errors, duplicate attempts\" vertex=\"1\"><mxGeometry height=\"110\" width=\"250\" x=\"15\" y=\"165\" as=\"geometry\"/></mxCell><mxCell id=\"c31\" parent=\"c28\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;spacing=6;\" value=\"&lt;b&gt;Eval Harness&lt;/b&gt;&lt;br&gt;Repeatable scenarios with explicit pass/fail: policy edges (day 30 vs 31, sale vs defective sale), wrong-owner orders, prompt injection, duplicate requests, lookup failure, missing info.&lt;br&gt;Every run saved to eval_runs/ (including failures). Regression test for the fixed worst failure. Gates each release\" vertex=\"1\"><mxGeometry height=\"230\" width=\"250\" x=\"15\" y=\"290\" as=\"geometry\"/></mxCell><mxCell id=\"c32\" parent=\"c28\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;spacing=6;\" value=\"&lt;b&gt;Secrets &amp;amp; Config&lt;/b&gt;&lt;br&gt;API keys only from env vars; no credentials in repo / ZIP. Least-privilege scopes per tool\" vertex=\"1\"><mxGeometry height=\"110\" width=\"250\" x=\"15\" y=\"535\" as=\"geometry\"/></mxCell><mxCell id=\"c33\" parent=\"c28\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;spacing=6;\" value=\"&lt;b&gt;Kill Switch &amp;amp; Limits&lt;/b&gt;&lt;br&gt;Feature flag to disable money actions (escalate-only mode); global daily refund budget\" vertex=\"1\"><mxGeometry height=\"110\" width=\"250\" x=\"15\" y=\"660\" as=\"geometry\"/></mxCell><mxCell id=\"c34\" parent=\"c28\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;spacing=6;\" value=\"&lt;b&gt;Reconciliation&lt;/b&gt;&lt;br&gt;Scheduled job compares ledger vs payment gateway; mismatches alert a human\" vertex=\"1\"><mxGeometry height=\"100\" width=\"250\" x=\"15\" y=\"785\" as=\"geometry\"/></mxCell><mxCell id=\"c35\" parent=\"c28\" style=\"rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;spacing=6;\" value=\"&lt;b&gt;Decision Log&lt;/b&gt;&lt;br&gt;ASSUMPTIONS.md records every policy choice the brief leaves open\" vertex=\"1\"><mxGeometry height=\"85\" width=\"250\" x=\"15\" y=\"900\" as=\"geometry\"/></mxCell><mxCell id=\"c39\" edge=\"1\" parent=\"1\" source=\"c7\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.9;entryY=0;\" target=\"c10\" value=\"identity + history\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c42\" edge=\"1\" parent=\"1\" source=\"c10\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;startArrow=classic;exitX=0.25;exitY=1;entryX=0.77;entryY=0;\" target=\"c13\" value=\"tool calls / results\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c43\" edge=\"1\" parent=\"1\" source=\"c10\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.75;exitY=1;entryX=0.23;entryY=0;\" target=\"c14\" value=\"proposed action\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c44\" edge=\"1\" parent=\"1\" source=\"c14\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.1;exitY=1;entryX=0.5;entryY=0;\" target=\"c16\" value=\"request\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c48\" edge=\"1\" parent=\"1\" source=\"c19\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.25;exitY=1;entryX=0.5;entryY=0;\" target=\"c23\" value=\"ALLOW\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c49\" edge=\"1\" parent=\"1\" source=\"c19\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.6;exitY=1;entryX=0.6;entryY=0;\" target=\"c24\" value=\"NEEDS HUMAN\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"c52\" edge=\"1\" parent=\"1\" source=\"c19\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=1;entryY=0.5;dashed=1;\" target=\"c11\" value=\"DENY / result back to agent\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"1165\" y=\"668\"/><mxPoint x=\"1165\" y=\"318\"/></Array></mxGeometry></mxCell><mxCell id=\"c53\" edge=\"1\" parent=\"1\" source=\"c23\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.9;entryY=0;\" target=\"c26\" value=\"action record\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"725\" y=\"925\"/><mxPoint x=\"522\" y=\"925\"/></Array></mxGeometry></mxCell><mxCell id=\"c54\" edge=\"1\" parent=\"1\" source=\"c24\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;strokeWidth=2;fontSize=11;fontStyle=1;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.7;entryY=0;\" target=\"c26\" value=\"escalation ID\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"1000\" y=\"948\"/><mxPoint x=\"417\" y=\"948\"/></Array></mxGeometry></mxCell></root></mxGraphModel></diagram></mxfile>",
+  "pages": [
+    {
+      "id": "u-5jSHulRnwbaWd04wu2",
+      "name": "Page-1",
+      "cells": [
+        {
+          "id": "1",
+          "type": "layer"
+        },
+        {
+          "id": "c2",
+          "type": "node",
+          "parent": "1",
+          "label": "Customer-Support Agent (Apparel) — Production Architecture for Real-Money Actions"
+        },
+        {
+          "id": "c3",
+          "type": "node",
+          "parent": "1",
+          "label": "1. Entry &amp; Identity"
+        },
+        {
+          "id": "c4",
+          "type": "node",
+          "parent": "c3",
+          "label": "Channel: CLI / API\nOne command:\ncustomer ID or guest email + message",
+          "html": "<b>Channel: CLI / API</b><br>One command:<br>customer ID <i>or</i> guest email + message"
+        },
+        {
+          "id": "c5",
+          "type": "node",
+          "parent": "c3",
+          "label": "Identity & AuthZ\nResolve customer / guest email.\nUnknown identity → clarify.\nAll data access scoped to this identity",
+          "html": "<b>Identity &amp; AuthZ</b><br>Resolve customer / guest email.<br>Unknown identity → clarify.<br>All data access scoped to this identity"
+        },
+        {
+          "id": "c6",
+          "type": "node",
+          "parent": "c3",
+          "label": "Input Guardrails\nPrompt-injection screening,\nPII redaction, rate limiting,\nmessage size limits",
+          "html": "<b>Input Guardrails</b><br>Prompt-injection screening,<br>PII redaction, rate limiting,<br>message size limits"
+        },
+        {
+          "id": "c7",
+          "type": "node",
+          "parent": "c3",
+          "label": "Session Loader\nLoad conversation history + prior\nactions from State Store so repeat\nrequests are recognised",
+          "html": "<b>Session Loader</b><br>Load conversation history + prior<br>actions from State Store so repeat<br>requests are recognised"
+        },
+        {
+          "id": "c36",
+          "type": "edge",
+          "parent": "c3",
+          "source": "c4",
+          "target": "c5"
+        },
+        {
+          "id": "c37",
+          "type": "edge",
+          "parent": "c3",
+          "source": "c5",
+          "target": "c6"
+        },
+        {
+          "id": "c38",
+          "type": "edge",
+          "parent": "c3",
+          "source": "c6",
+          "target": "c7"
+        },
+        {
+          "id": "c8",
+          "type": "node",
+          "parent": "1",
+          "label": "2. Reasoning — LLM (untrusted: proposes, never executes money moves)"
+        },
+        {
+          "id": "c9",
+          "type": "node",
+          "parent": "c8",
+          "label": "Policy & Knowledge\nVersioned policies, product catalog,\nASSUMPTIONS.md decisions\n(grounding, no invented policy)",
+          "html": "<b>Policy &amp; Knowledge</b><br>Versioned policies, product catalog,<br>ASSUMPTIONS.md decisions<br>(grounding, no invented policy)"
+        },
+        {
+          "id": "c10",
+          "type": "node",
+          "parent": "c8",
+          "label": "Agent Orchestrator (LLM tool-calling loop)\nUnderstands intent, gathers facts via tools, drafts reply.\nModel API key from environment variable. Bounded steps, timeouts,\ntemperature 0, structured tool calls only",
+          "html": "<b>Agent Orchestrator (LLM tool-calling loop)</b><br>Understands intent, gathers facts via tools, drafts reply.<br>Model API key from environment variable. Bounded steps, timeouts,<br>temperature 0, structured tool calls only"
+        },
+        {
+          "id": "c11",
+          "type": "node",
+          "parent": "c8",
+          "label": "Agent Outcomes\nAnswer · Clarify (missing order / item /\nreason) · Propose action · Escalate",
+          "html": "<b>Agent Outcomes</b><br>Answer · Clarify (missing order / item /<br>reason) · Propose action · Escalate"
+        },
+        {
+          "id": "c40",
+          "type": "edge",
+          "parent": "c8",
+          "source": "c9",
+          "target": "c10"
+        },
+        {
+          "id": "c41",
+          "type": "edge",
+          "parent": "c8",
+          "source": "c10",
+          "target": "c11"
+        },
+        {
+          "id": "c12",
+          "type": "node",
+          "parent": "1",
+          "label": "3. Tool Layer (typed schemas, validated arguments)"
+        },
+        {
+          "id": "c13",
+          "type": "node",
+          "parent": "c12",
+          "label": "Read Tools\nlookup_order · get_customer · get_product · get_policy\nOwnership-checked, timeouts + limited retries.\nFault injection: env flag (e.g. ORDER_LOOKUP_FAIL=1) forces lookup failure\n→ fail closed: no money action, apologise + escalate",
+          "html": "<b>Read Tools</b><br>lookup_order · get_customer · get_product · get_policy<br>Ownership-checked, timeouts + limited retries.<br><b>Fault injection:</b> env flag (e.g. ORDER_LOOKUP_FAIL=1) forces lookup failure<br>→ fail closed: no money action, apologise + escalate"
+        },
+        {
+          "id": "c14",
+          "type": "node",
+          "parent": "c12",
+          "label": "Write Tools (proposals only)\npropose_refund · propose_exchange · propose_cancellation · escalate_to_human\nEach call is a request handed to the Money Gate —\nthe LLM cannot call the payment system directly",
+          "html": "<b>Write Tools (proposals only)</b><br>propose_refund · propose_exchange · propose_cancellation · escalate_to_human<br>Each call is a <i>request</i> handed to the Money Gate —<br>the LLM cannot call the payment system directly"
+        },
+        {
+          "id": "c15",
+          "type": "node",
+          "parent": "1",
+          "label": "4. Deterministic Money Gate — plain code, not LLM (fail closed)"
+        },
+        {
+          "id": "c16",
+          "type": "node",
+          "parent": "c15",
+          "label": "Policy Engine\n• Order belongs to this customer\n• Return ≤ 30 days from delivery\n• Sale item → exchange only;\n  refund only if defective\n• Cancel only before shipment",
+          "html": "<b>Policy Engine</b><br>• Order belongs to this customer<br>• Return ≤ 30 days from delivery<br>• Sale item → exchange only;<br>&nbsp;&nbsp;refund only if defective<br>• Cancel only before shipment"
+        },
+        {
+          "id": "c17",
+          "type": "node",
+          "parent": "c15",
+          "label": "Risk & Limits\n• Amount ≤ paid − already refunded\n  (computed from order, never from LLM)\n• Refund cap / velocity limits\n• Unverified defect claim, high value,\n  abuse signals → human",
+          "html": "<b>Risk &amp; Limits</b><br>• Amount ≤ paid − already refunded<br>&nbsp;&nbsp;(computed from order, never from LLM)<br>• Refund cap / velocity limits<br>• Unverified defect claim, high value,<br>&nbsp;&nbsp;abuse signals → human"
+        },
+        {
+          "id": "c18",
+          "type": "node",
+          "parent": "c15",
+          "label": "Idempotency & Duplicate Check\nKey = order + item + action.\nAlready done → return existing\nresult, never pay twice.\nConflicting prior action → deny",
+          "html": "<b>Idempotency &amp; Duplicate Check</b><br>Key = order + item + action.<br>Already done → return existing<br>result, never pay twice.<br>Conflicting prior action → deny"
+        },
+        {
+          "id": "c19",
+          "type": "node",
+          "parent": "c15",
+          "label": "Decision\nALLOW → execute\nDENY → explain + offer allowed\nalternative (e.g. exchange)\nNEEDS HUMAN → escalate",
+          "html": "<b>Decision</b><br><b>ALLOW</b> → execute<br><b>DENY</b> → explain + offer allowed<br>alternative (e.g. exchange)<br><b>NEEDS HUMAN</b> → escalate"
+        },
+        {
+          "id": "c45",
+          "type": "edge",
+          "parent": "c15",
+          "source": "c16",
+          "target": "c17"
+        },
+        {
+          "id": "c46",
+          "type": "edge",
+          "parent": "c15",
+          "source": "c17",
+          "target": "c18"
+        },
+        {
+          "id": "c47",
+          "type": "edge",
+          "parent": "c15",
+          "source": "c18",
+          "target": "c19"
+        },
+        {
+          "id": "c20",
+          "type": "node",
+          "parent": "1",
+          "label": "5. Execution &amp; State"
+        },
+        {
+          "id": "c21",
+          "type": "node",
+          "parent": "c20",
+          "label": "State Store / Ledger (durable DB)\nSessions, orders, actions ledger,\nidempotency keys, escalations.\nPersists between calls",
+          "html": "<b>State Store / Ledger (durable DB)</b><br>Sessions, orders, actions ledger,<br>idempotency keys, escalations.<br>Persists between calls"
+        },
+        {
+          "id": "c22",
+          "type": "node",
+          "parent": "c20",
+          "label": "Payment Gateway + OMS Adapters\nRefund to original payment method,\ncreate exchange, cancel order.\nIdempotency key passed downstream",
+          "html": "<b>Payment Gateway + OMS Adapters</b><br>Refund to original payment method,<br>create exchange, cancel order.<br>Idempotency key passed downstream"
+        },
+        {
+          "id": "c23",
+          "type": "node",
+          "parent": "c20",
+          "label": "Action Executor\nSingle transactional path for refund /\nexchange / cancellation. Write ledger\nintent → call adapter → commit result",
+          "html": "<b>Action Executor</b><br>Single transactional path for refund /<br>exchange / cancellation. Write ledger<br>intent → call adapter → commit result"
+        },
+        {
+          "id": "c24",
+          "type": "node",
+          "parent": "c20",
+          "label": "Human Review Queue\nTicket with full context + reason.\nHuman approves / rejects;\ncustomer told it is escalated",
+          "html": "<b>Human Review Queue</b><br>Ticket with full context + reason.<br>Human approves / rejects;<br>customer told it is escalated"
+        },
+        {
+          "id": "c50",
+          "type": "edge",
+          "parent": "c20",
+          "source": "c23",
+          "target": "c22"
+        },
+        {
+          "id": "c51",
+          "type": "edge",
+          "parent": "c20",
+          "source": "c22",
+          "target": "c21",
+          "label": "record result"
+        },
+        {
+          "id": "c25",
+          "type": "node",
+          "parent": "1",
+          "label": "6. Response"
+        },
+        {
+          "id": "c26",
+          "type": "node",
+          "parent": "c25",
+          "label": "Output Guardrail\nReply must match the ledger: never claim a refund / cancellation that was not executed.\nNo leaked data of other customers, no invented policy. Mismatch → safe fallback + escalate",
+          "html": "<b>Output Guardrail</b><br>Reply must match the ledger: never claim a refund / cancellation that was not executed.<br>No leaked data of other customers, no invented policy. Mismatch → safe fallback + escalate"
+        },
+        {
+          "id": "c27",
+          "type": "node",
+          "parent": "c25",
+          "label": "Printed Result\nReply + Action taken: refund | exchange | cancellation | escalation | none\n(with action ID and amount)",
+          "html": "<b>Printed Result</b><br><b>Reply</b> + <b>Action taken</b>: refund | exchange | cancellation | escalation | none<br>(with action ID and amount)"
+        },
+        {
+          "id": "c55",
+          "type": "edge",
+          "parent": "c25",
+          "source": "c26",
+          "target": "c27"
+        },
+        {
+          "id": "c28",
+          "type": "node",
+          "parent": "1",
+          "label": "Cross-cutting Controls"
+        },
+        {
+          "id": "c29",
+          "type": "node",
+          "parent": "c28",
+          "label": "Audit Log (append-only)\nEvery message, tool call, gate decision and money action, with policy version and reason codes",
+          "html": "<b>Audit Log (append-only)</b><br>Every message, tool call, gate decision and money action, with policy version and reason codes"
+        },
+        {
+          "id": "c30",
+          "type": "node",
+          "parent": "c28",
+          "label": "Observability & Alerts\nTraces, metrics, alerts on refund volume, deny / escalation rate, tool errors, duplicate attempts",
+          "html": "<b>Observability &amp; Alerts</b><br>Traces, metrics, alerts on refund volume, deny / escalation rate, tool errors, duplicate attempts"
+        },
+        {
+          "id": "c31",
+          "type": "node",
+          "parent": "c28",
+          "label": "Eval Harness\nRepeatable scenarios with explicit pass/fail: policy edges (day 30 vs 31, sale vs defective sale), wrong-owner orders, prompt injection, duplicate requests, lookup failure, missing info.\nEvery run saved to eval_runs/ (including failures). Regression test for the fixed worst failure. Gates each release",
+          "html": "<b>Eval Harness</b><br>Repeatable scenarios with explicit pass/fail: policy edges (day 30 vs 31, sale vs defective sale), wrong-owner orders, prompt injection, duplicate requests, lookup failure, missing info.<br>Every run saved to eval_runs/ (including failures). Regression test for the fixed worst failure. Gates each release"
+        },
+        {
+          "id": "c32",
+          "type": "node",
+          "parent": "c28",
+          "label": "Secrets & Config\nAPI keys only from env vars; no credentials in repo / ZIP. Least-privilege scopes per tool",
+          "html": "<b>Secrets &amp; Config</b><br>API keys only from env vars; no credentials in repo / ZIP. Least-privilege scopes per tool"
+        },
+        {
+          "id": "c33",
+          "type": "node",
+          "parent": "c28",
+          "label": "Kill Switch & Limits\nFeature flag to disable money actions (escalate-only mode); global daily refund budget",
+          "html": "<b>Kill Switch &amp; Limits</b><br>Feature flag to disable money actions (escalate-only mode); global daily refund budget"
+        },
+        {
+          "id": "c34",
+          "type": "node",
+          "parent": "c28",
+          "label": "Reconciliation\nScheduled job compares ledger vs payment gateway; mismatches alert a human",
+          "html": "<b>Reconciliation</b><br>Scheduled job compares ledger vs payment gateway; mismatches alert a human"
+        },
+        {
+          "id": "c35",
+          "type": "node",
+          "parent": "c28",
+          "label": "Decision Log\nASSUMPTIONS.md records every policy choice the brief leaves open",
+          "html": "<b>Decision Log</b><br>ASSUMPTIONS.md records every policy choice the brief leaves open"
+        },
+        {
+          "id": "c39",
+          "type": "edge",
+          "parent": "1",
+          "source": "c7",
+          "target": "c10",
+          "label": "identity + history"
+        },
+        {
+          "id": "c42",
+          "type": "edge",
+          "parent": "1",
+          "source": "c10",
+          "target": "c13",
+          "label": "tool calls / results"
+        },
+        {
+          "id": "c43",
+          "type": "edge",
+          "parent": "1",
+          "source": "c10",
+          "target": "c14",
+          "label": "proposed action"
+        },
+        {
+          "id": "c44",
+          "type": "edge",
+          "parent": "1",
+          "source": "c14",
+          "target": "c16",
+          "label": "request"
+        },
+        {
+          "id": "c48",
+          "type": "edge",
+          "parent": "1",
+          "source": "c19",
+          "target": "c23",
+          "label": "ALLOW"
+        },
+        {
+          "id": "c49",
+          "type": "edge",
+          "parent": "1",
+          "source": "c19",
+          "target": "c24",
+          "label": "NEEDS HUMAN"
+        },
+        {
+          "id": "c52",
+          "type": "edge",
+          "parent": "1",
+          "source": "c19",
+          "target": "c11",
+          "label": "DENY / result back to agent"
+        },
+        {
+          "id": "c53",
+          "type": "edge",
+          "parent": "1",
+          "source": "c23",
+          "target": "c26",
+          "label": "action record"
+        },
+        {
+          "id": "c54",
+          "type": "edge",
+          "parent": "1",
+          "source": "c24",
+          "target": "c26",
+          "label": "escalation ID"
+        }
+      ]
+    }
+  ]
+}
