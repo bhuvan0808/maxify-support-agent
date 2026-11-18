@@ -175,7 +175,13 @@ export class SupportAgent {
         });
 
         if (response.toolCalls.length === 0) {
-          reply = response.content?.trim() || null;
+          // Models like to emit typographic hyphens and spaces ("ORD‑1001"). Normalise them so
+          // references are copy-pasteable and the output guard sees real order numbers.
+          reply =
+            response.content
+              ?.replace(/[‐-―−]/g, "-")
+              .replace(/[  ]/g, " ")
+              .trim() || null;
           break;
         }
 

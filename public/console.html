@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ops console</title>
+<!--
+  Human-in-the-loop console. One self-contained file, no build step.
+
+  This is the reference client for the admin API (/v1/admin/*). A client that already has
+  a helpdesk can ignore this page and call the same endpoints from their own tool.
+
+  The admin key is typed by the operator and kept in sessionStorage only (cleared when the
+  tab closes). It is sent as a Bearer token and never written into the page or a URL.
+  All data is rendered with textContent.
+-->
+<style>
+  :root {
+    --bg:#FAFAF7; --card:#FFFFFF; --ink:#13221B; --muted:#5A6472;
+    --line:rgba(19,34,27,0.13); --line-soft:rgba(19,34,27,0.07);
+    --brand:#0F2B21; --brand-ink:#EAF3EE; --accent:#00D084; --accent-text:#067A50;
+    --mint:#CFF3E1; --sky:#D8E9FB; --lilac:#E6DFF6; --butter:#FBEFC9; --oat:#F4EFE6;
+    --info-text:#1D5FA8; --warn-text:#7A5200; --danger-text:#B23030; --danger-tint:rgba(255,92,92,0.14);
+    --font: "Figtree", "Sora", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --radius: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0F2B21; --card:#16352A; --ink:#EAF3EE; --muted:#9DB3A9;
+      --line:rgba(234,243,238,0.15); --line-soft:rgba(234,243,238,0.08);
+      --brand:#0A1F18; --brand-ink:#EAF3EE; --accent:#00D084; --accent-text:#2FE0A2;
+      --mint:#1C4636; --sky:#1C3A52; --lilac:#332C46; --butter:#42391C; --oat:#2E3128;
+      --info-text:#4DA6FF; --warn-text:#FFB020; --danger-text:#FF8A8A; --danger-tint:rgba(255,92,92,0.15);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14.5px/1.5 var(--font); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: var(--accent-text); }
+  header { background: var(--brand); color: var(--brand-ink); padding: 12px 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  header h1 { font-size: 16px; margin: 0; }
+  .pill { font: 600 11px/1 var(--mono); padding: 5px 8px; border-radius: 999px; background: rgba(0,208,132,.18); color: #2FE0A2; text-transform: uppercase; letter-spacing: .6px; }
+  header .spacer { flex: 1; }
+  header a { color: var(--brand-ink); text-decoration: none; font-size: 13px; border: 1px solid rgba(234,243,238,.25); padding: 6px 10px; border-radius: 9px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 16px; }
+
+  .bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+  .field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 200px; min-width: 0; }
+  .field label { font: 600 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .7px; color: var(--muted); }
+  input, select, textarea { border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 8px 10px; outline: none; width: 100%; }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,208,132,.18); }
+  .btn { border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 8px 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #0F2B21; }
+  .btn.danger { background: var(--danger-tint); border-color: transparent; color: var(--danger-text); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .tabs { display: flex; gap: 6px; margin: 16px 0 12px; flex-wrap: wrap; }
+  .tab { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 7px 14px; cursor: pointer; font-weight: 600; }
+  .tab[aria-selected="true"] { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+  .count { font: 600 11px/1 var(--mono); margin-left: 6px; padding: 2px 6px; border-radius: 999px; background: var(--accent); color: #0F2B21; }
+  section { display: none; }
+  section.active { display: block; }
+  .status { margin: 10px 0; padding: 9px 12px; border-radius: 10px; background: var(--oat); border: 1px solid var(--line-soft); font-size: 13.5px; }
+  .status.ok { background: var(--mint); }
+  .status.bad { background: var(--danger-tint); color: var(--danger-text); }
+  .muted { color: var(--muted); }
+
+  .ticket { background: var(--card); border: 1px solid var(--line); border-left: 5px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+  .ticket.P1 { border-left-color: var(--danger-text); }
+  .ticket.P2 { border-left-color: #FFB020; }
+  .ticket.P3 { border-left-color: var(--info-text); }
+  .ticket .head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .ticket .id { font: 700 14px var(--mono); }
+  .ticket .title { font-weight: 700; text-transform: capitalize; }
+  .ticket .due { margin-left: auto; font: 12px var(--mono); color: var(--muted); }
+  .ticket .due.late { color: var(--danger-text); font-weight: 700; }
+  .ticket p { margin: 8px 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 10px 0; }
+  .box { background: var(--bg); border: 1px solid var(--line-soft); border-radius: 10px; padding: 9px 11px; min-width: 0; }
+  .box h3 { margin: 0 0 4px; font: 600 10.5px/1.2 var(--mono); text-transform: uppercase; letter-spacing: .7px; color: var(--muted); }
+  .box .big { font: 700 17px var(--mono); }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { font: 600 10.5px/1 var(--mono); padding: 4px 7px; border-radius: 999px; border: 1px solid var(--line); overflow-wrap: anywhere; }
+  .chip.P1, .chip.high { background: var(--danger-tint); color: var(--danger-text); border-color: transparent; }
+  .chip.P2, .chip.elevated { background: var(--butter); color: var(--warn-text); border-color: transparent; }
+  .chip.P3, .chip.low { background: var(--sky); color: var(--info-text); border-color: transparent; }
+  .chip.open { background: var(--lilac); border-color: transparent; }
+  .chip.executed, .chip.approved { background: var(--mint); color: var(--accent-text); border-color: transparent; }
+  .chip.failed, .chip.rejected { background: var(--danger-tint); color: var(--danger-text); border-color: transparent; }
+  .decide { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+  .decide input { flex: 1 1 220px; }
+
+  .tablewrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font: 600 10.5px/1.2 var(--mono); text-transform: uppercase; letter-spacing: .7px; color: var(--muted); white-space: nowrap; }
+  td.mono, .mono { font-family: var(--mono); font-size: 12px; }
+  td.num { text-align: right; font-family: var(--mono); white-space: nowrap; }
+  pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 11.5px/1.45 var(--mono); max-height: 180px; overflow: auto; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="brandName">Support</h1>
+  <span class="pill">Ops console</span>
+  <span class="spacer"></span>
+  <a href="/">Customer chat</a>
+</header>
+
+<div class="wrap">
+  <div class="bar">
+    <div class="field">
+      <label for="adminKey">Admin key</label>
+      <input id="adminKey" type="password" placeholder="ADMIN_API_KEY" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="approver">Acting as</label>
+      <select id="approver"></select>
+    </div>
+    <button class="btn primary" id="connect">Connect</button>
+    <button class="btn" id="refresh">Refresh</button>
+  </div>
+  <div class="status" id="status">Enter the admin key to load the review queue.</div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="queue" aria-selected="true">Review queue<span class="count" id="openCount">0</span></button>
+    <button class="tab" role="tab" data-tab="ledger" aria-selected="false">Action ledger</button>
+    <button class="tab" role="tab" data-tab="notifications" aria-selected="false">Notifications</button>
+    <button class="tab" role="tab" data-tab="audit" aria-selected="false">Audit trail</button>
+    <button class="tab" role="tab" data-tab="admin" aria-selected="false">Demo data</button>
+  </div>
+
+  <section id="tab-queue" class="active">
+    <div class="row">
+      <div class="field" style="flex:0 1 220px">
+        <label for="queueFilter">Show</label>
+        <select id="queueFilter">
+          <option value="open">Open tickets</option>
+          <option value="">All tickets (newest first)</option>
+        </select>
+      </div>
+    </div>
+    <div id="queue"></div>
+  </section>
+
+  <section id="tab-ledger">
+    <p class="muted">Every refund, exchange and cancellation, whether the agent executed it or a person approved it.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Action</th><th>Type</th><th>Status</th><th>Order / item</th><th>Amount</th><th>Decided by</th><th>Customer</th><th>Gateway ref</th><th>When</th></tr></thead>
+      <tbody id="ledger"></tbody>
+    </table></div>
+  </section>
+
+  <section id="tab-notifications">
+    <p class="muted">Priority notifications raised for people. With NOTIFY_WEBHOOK_URL set these are also posted to Slack, Teams or a helpdesk.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Priority</th><th>Title</th><th>Detail</th><th>Delivery</th><th>When</th></tr></thead>
+      <tbody id="notifications"></tbody>
+    </table></div>
+  </section>
+
+  <section id="tab-audit">
+    <div class="row">
+      <button class="btn primary" id="verify">Verify hash chains</button>
+      <div class="field"><label for="traceId">Trace ID (shown under each chat reply)</label><input id="traceId" placeholder="leave empty for the latest 100 events" autocomplete="off"></div>
+      <button class="btn" id="loadAudit">Load events</button>
+    </div>
+    <div class="status" id="verifyResult">The audit log is append-only and hash-chained per conversation. Verification recomputes every hash.</div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>#</th><th>Time</th><th>Event</th><th>Data</th><th>Hash</th></tr></thead>
+      <tbody id="audit"></tbody>
+    </table></div>
+  </section>
+
+  <section id="tab-admin">
+    <p>Reset drops every table and seeds the demo data again, with order dates relative to now (so "delivered 30 days ago" is true today). All conversations, actions and tickets are removed.</p>
+    <button class="btn danger" id="reset">Reset demo data</button>
+    <div class="status" id="resetResult">Nothing reset yet.</div>
+  </section>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const state = { symbol: "S$", key: "" };
+
+  function el(tag, attrs, ...children) {
+    const node = document.createElement(tag);
+    for (const [key, value] of Object.entries(attrs || {})) {
+      if (key === "class") node.className = value;
+      else if (key === "text") node.textContent = value;
+      else node.setAttribute(key, value);
+    }
+    for (const child of children) {
+      if (child === null || child === undefined || child === "") continue;
+      node.append(child instanceof Node ? child : document.createTextNode(String(child)));
+    }
+    return node;
+  }
+  const money = (cents) => (cents === null || cents === undefined) ? "" : `${state.symbol}${(cents / 100).toFixed(2)}`;
+  const when = (iso) => iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "";
+  function setStatus(id, text, kind) { const node = $(id); node.textContent = text; node.className = `status ${kind || ""}`.trim(); }
+
+  function due(iso) {
+    const ms = new Date(iso).getTime() - Date.now();
+    const abs = Math.abs(ms);
+    const hours = Math.floor(abs / 3_600_000), minutes = Math.floor((abs % 3_600_000) / 60_000);
+    const span = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    return { late: ms < 0, text: ms < 0 ? `overdue by ${span}` : `reply due in ${span}` };
+  }
+
+  async function api(path, options) {
+    const response = await fetch(path, {
+      ...(options || {}),
+      headers: { authorization: `Bearer ${state.key}`, "content-type": "application/json", ...((options || {}).headers || {}) },
+    });
+    const body = await response.json().catch(() => ({}));
+    return { ok: response.ok, status: response.status, body };
+  }
+
+  // --- Review queue -------------------------------------------------------------------
+  function ticketCard(t) {
+    const d = due(t.slaDueAt);
+    const proposed = t.proposedAction;
+    const risk = t.riskSnapshot || {};
+    const card = el("div", { class: `ticket ${t.priority}` },
+      el("div", { class: "head" },
+        el("span", { class: "id", text: t.id }),
+        el("span", { class: `chip ${t.priority}`, text: t.priority }),
+        el("span", { class: `chip ${t.status}`, text: t.status }),
+        el("span", { class: "title", text: String(t.category).replace(/_/g, " ") }),
+        t.status === "open" ? el("span", { class: `due${d.late ? " late" : ""}`, text: d.text }) : el("span", { class: "due", text: when(t.decidedAt || t.createdAt) }),
+      ),
+      el("p", { text: t.summary }),
+    );
+
+    const grid = el("div", { class: "grid" });
+    grid.append(el("div", { class: "box" },
+      el("h3", { text: "Proposed action" }),
+      proposed
+        ? el("div", {},
+            el("div", { class: "big", text: proposed.type === "exchange" ? "Exchange" : `${proposed.type} ${money(proposed.amountCents)}` }),
+            el("div", { class: "mono muted", text: [proposed.orderId, proposed.lineId, proposed.qty ? `qty ${proposed.qty}` : "", proposed.reason, proposed.newSize, proposed.newColour].filter(Boolean).join(" · ") }),
+            proposed.evidenceQuote ? el("div", { text: `Customer said: "${proposed.evidenceQuote}"` }) : null)
+        : el("div", { class: "muted", text: "None. Approving marks the ticket as handled." })));
+    grid.append(el("div", { class: "box" },
+      el("h3", { text: "Customer" }),
+      el("div", { class: "mono", text: t.customerKey }),
+      el("div", { class: "mono muted", text: [t.orderId, t.lineId].filter(Boolean).join(" · ") }),
+      risk.tier ? el("div", { class: "chips", style: "margin-top:6px" }, el("span", { class: `chip ${risk.tier}`, text: `risk: ${risk.tier}` })) : null));
+    const signals = (risk.signals || []);
+    grid.append(el("div", { class: "box" },
+      el("h3", { text: "Why a person is needed" }),
+      el("div", { class: "chips" }, ...(t.codes || []).map((code) => el("span", { class: "chip", text: code }))),
+      signals.length ? el("h3", { style: "margin-top:8px", text: "Risk signals" }) : null,
+      signals.length ? el("div", { class: "chips" }, ...signals.map((s) => el("span", { class: "chip elevated", text: s }))) : null));
+    if (risk.stats) {
+      const s = risk.stats;
+      grid.append(el("div", { class: "box" },
+        el("h3", { text: "History" }),
+        el("div", { class: "mono", text: `${s.refundedOrders}/${s.deliveredOrders} delivered orders refunded` }),
+        el("div", { class: "mono muted", text: `${s.defectRefunds180d} fault refunds in 180d · ${s.autoRefunds30d} auto refunds in 30d` })));
+    }
+    card.append(grid);
+
+    if (t.status === "open") {
+      const note = el("input", { placeholder: "Note for the record (optional)", maxlength: "300" });
+      const approve = el("button", { class: "btn primary", text: proposed ? "Approve and execute" : "Mark handled" });
+      const reject = el("button", { class: "btn danger", text: "Reject" });
+      const result = el("div", { class: "status", text: "Approving re-checks the order against live data, then executes through the same path the agent uses." });
+      const decide = async (decision) => {
+        approve.disabled = reject.disabled = true;
+        const r = await api(`/v1/admin/escalations/${encodeURIComponent(t.id)}/decision`, {
+          method: "POST",
+          body: JSON.stringify({ decision, approver_id: $("approver").value, note: note.value }),
+        });
+        result.textContent = `${r.body.code || r.body.error || r.status}: ${r.body.message || ""}`;
+        result.className = `status ${r.ok ? "ok" : "bad"}`;
+        if (r.ok || r.body.code === "ALREADY_DECIDED" || r.body.code === "NOT_EXECUTABLE") setTimeout(loadAll, 1600);
+        else approve.disabled = reject.disabled = false;
+      };
+      approve.addEventListener("click", () => decide("approve"));
+      reject.addEventListener("click", () => decide("reject"));
+      card.append(el("div", { class: "decide" }, note, approve, reject), result);
+    } else {
+      card.append(el("div", { class: "muted", text: `Decided by ${t.decidedBy || "n/a"}${t.resultActionId ? `, executed as ${t.resultActionId}` : ""}${t.decisionNote ? `. Note: ${t.decisionNote}` : ""}` }));
+    }
+    return card;
+  }
+
+  async function loadQueue() {
+    const filter = $("queueFilter").value;
+    const r = await api(`/v1/admin/escalations${filter ? `?status=${filter}` : ""}`);
+    if (!r.ok) return r;
+    const list = r.body.escalations || [];
+    $("queue").replaceChildren(...(list.length ? list.map(ticketCard) : [el("div", { class: "status", text: "No tickets here. The agent has not needed a person yet." })]));
+    if (filter === "open") $("openCount").textContent = String(list.length);
+    return r;
+  }
+
+  async function loadLedger() {
+    const r = await api("/v1/admin/actions");
+    if (!r.ok) return;
+    $("ledger").replaceChildren(...(r.body.actions || []).map((a) => el("tr", {},
+      el("td", { class: "mono", text: a.id }),
+      el("td", { text: a.type }),
+      el("td", {}, el("span", { class: `chip ${a.status}`, text: a.status })),
+      el("td", { class: "mono", text: [a.orderId, a.lineId].filter(Boolean).join(" · ") }),
+      el("td", { class: "num", text: a.type === "exchange" ? "" : money(a.amountCents) }),
+      el("td", { class: "mono", text: a.origin === "human" ? `human: ${a.approvedBy}` : a.origin }),
+      el("td", { class: "mono", text: a.customerKey }),
+      el("td", { class: "mono", text: a.externalRef || "" }),
+      el("td", { text: when(a.createdAt) }),
+    )));
+  }
+
+  async function loadNotifications() {
+    const r = await api("/v1/admin/notifications");
+    if (!r.ok) return;
+    $("notifications").replaceChildren(...(r.body.notifications || []).map((n) => el("tr", {},
+      el("td", {}, el("span", { class: `chip ${n.priority}`, text: n.priority })),
+      el("td", { text: n.title }),
+      el("td", { text: n.body }),
+      el("td", { class: "mono", text: n.delivery }),
+      el("td", { text: when(n.created_at) }),
+    )));
+  }
+
+  async function loadAudit() {
+    const trace = $("traceId").value.trim();
+    const r = await api(`/v1/admin/audit${trace ? `?trace_id=${encodeURIComponent(trace)}` : ""}`);
+    if (!r.ok) return;
+    $("audit").replaceChildren(...(r.body.events || []).map((e) => {
+      let data = e.data;
+      try { data = JSON.stringify(JSON.parse(e.data), null, 1); } catch { /* keep raw */ }
+      return el("tr", {},
+        el("td", { class: "mono", text: `${e.seq}` }),
+        el("td", { class: "mono", text: when(e.ts) }),
+        el("td", { class: "mono", text: e.event }),
+        el("td", {}, el("pre", { text: data })),
+        el("td", { class: "mono", text: String(e.hash).slice(0, 12) }),
+      );
+    }));
+  }
+
+  async function verify() {
+    const r = await api("/v1/admin/audit/verify");
+    if (!r.ok) return setStatus("verifyResult", `Could not verify (${r.status}).`, "bad");
+    const v = r.body;
+    setStatus("verifyResult",
+      v.ok ? `Intact: ${v.events} events across ${v.chains} chains, every hash matches.`
+           : `TAMPERING DETECTED in ${v.broken.length} chain(s): ${v.broken.map((b) => `${b.chainId} at #${b.seq} (${b.problem})`).join("; ")}`,
+      v.ok ? "ok" : "bad");
+  }
+
+  async function loadAll() {
+    if (!state.key) return setStatus("status", "Enter the admin key to load the review queue.");
+    const r = await loadQueue();
+    if (!r.ok) {
+      return setStatus("status", r.status === 401 ? "That admin key was not accepted." : `Could not load (${r.status} ${r.body.error || ""}).`, "bad");
+    }
+    setStatus("status", `Connected. Updated ${new Date().toLocaleTimeString()}.`, "ok");
+    await Promise.all([loadLedger(), loadNotifications(), loadAudit()]);
+  }
+
+  // --- Wiring -------------------------------------------------------------------------
+  for (const tab of document.querySelectorAll(".tab")) {
+    tab.addEventListener("click", () => {
+      for (const other of document.querySelectorAll(".tab")) other.setAttribute("aria-selected", String(other === tab));
+      for (const section of document.querySelectorAll("section")) section.classList.toggle("active", section.id === `tab-${tab.dataset.tab}`);
+    });
+  }
+  $("connect").addEventListener("click", () => {
+    state.key = $("adminKey").value.trim();
+    try { sessionStorage.setItem("adminKey", state.key); } catch { /* storage may be blocked; the key still works for this page */ }
+    loadAll();
+  });
+  $("adminKey").addEventListener("keydown", (event) => { if (event.key === "Enter") $("connect").click(); });
+  $("refresh").addEventListener("click", loadAll);
+  $("queueFilter").addEventListener("change", loadQueue);
+  $("verify").addEventListener("click", verify);
+  $("loadAudit").addEventListener("click", loadAudit);
+  $("reset").addEventListener("click", async () => {
+    if (!confirm("Reset all demo data? Conversations, actions and tickets will be removed.")) return;
+    setStatus("resetResult", "Resetting…");
+    const r = await api("/v1/admin/reset", { method: "POST", body: "{}" });
+    setStatus("resetResult", r.ok ? `Reset done at ${when(r.body.seededAt)}.` : `Reset failed (${r.status} ${r.body.error || ""}).`, r.ok ? "ok" : "bad");
+    if (r.ok) loadAll();
+  });
+
+  async function init() {
+    try {
+      const config = await (await fetch("/v1/config/public")).json();
+      state.symbol = config.locale?.currencySymbol || "S$";
+      $("brandName").textContent = config.brand.name;
+      document.title = `${config.brand.name} · Ops console`;
+      const toCss = (vars) => Object.entries(vars || {})
+        .filter(([name, value]) => /^--[a-z0-9-]+$/i.test(name) && !/[;{}<>]/.test(String(value)))
+        .map(([name, value]) => `${name}:${value}`).join(";");
+      const style = document.createElement("style");
+      style.textContent = `:root{${toCss(config.theme)}}@media (prefers-color-scheme: dark){:root{${toCss(config.themeDark)}}}`;
+      document.head.append(style);
+      for (const [id, role] of Object.entries(config.demo?.approvers || {})) {
+        $("approver").append(el("option", { value: id, text: `${id} (${role.replace(/_/g, " ")})` }));
+      }
+    } catch { /* the console still works with defaults */ }
+    if ($("approver").options.length === 0) $("approver").append(el("option", { value: "agent.lee", text: "agent.lee" }));
+
+    const trace = new URLSearchParams(location.search).get("trace");
+    if (trace) {
+      $("traceId").value = trace;
+      document.querySelector('.tab[data-tab="audit"]').click();
+    }
+    try { state.key = sessionStorage.getItem("adminKey") || ""; } catch { state.key = ""; }
+    if (state.key) { $("adminKey").value = state.key; loadAll(); }
+  }
+  init();
+})();
+</script>
+</body>
+</html>

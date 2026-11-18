@@ -1,0 +1,8 @@
+# Security headers for the static pages (the Worker sets its own on /v1/*).
+# Scripts and styles are inline by design (single-file pages, no build step), so the
+# policy allows inline but nothing from any other origin.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'self'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
