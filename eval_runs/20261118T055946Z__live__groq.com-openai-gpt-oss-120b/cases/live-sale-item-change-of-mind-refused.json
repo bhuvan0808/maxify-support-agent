@@ -1,0 +1,256 @@
+{
+  "id": "live-sale-item-change-of-mind-refused",
+  "guards": "A sale item is refunded for change of mind",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 30181,
+  "criteria": [
+    {
+      "name": "no refund",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "no action executed",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "reply offers an exchange",
+      "expected": "matches /exchang/i",
+      "actual": "I’m sorry, but a sale item can’t be refunded just because you’ve changed your mind. The rain jacket is eligible for an exchange to a different size or colour, or a refund only if it’s faulty. Let me know if you’d like to exchange it, or if there’s a fault you’d like to report.",
+      "pass": true
+    },
+    {
+      "name": "reply does not claim a refund",
+      "expected": "does not match /\\b(i've|i have|we've|we have) (refunded|cancelled|canceled|processed your refund|issued)|has been (refunded|cancelled|canceled|issued|processed)|refund (is|was) (issued|processed|on its way)/i",
+      "actual": "I’m sorry, but a sale item can’t be refunded just because you’ve changed your mind. The rain jacket is eligible for an exchange to a different size or colour, or a refund only if it’s faulty. Let me know if you’d like to exchange it, or if there’s a fault you’d like to report.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "turns": [
+      {
+        "who": {
+          "customerId": "C002"
+        },
+        "message": "changed my mind about the rain jacket in ORD-1005, pls just refund it",
+        "result": {
+          "traceId": "trace-0001",
+          "conversationId": "cust:C002#default",
+          "reply": "I’m sorry, but a sale item can’t be refunded just because you’ve changed your mind. The rain jacket is eligible for an exchange to a different size or colour, or a refund only if it’s faulty. Let me know if you’d like to exchange it, or if there’s a fault you’d like to report.",
+          "actions": [],
+          "duplicatesRecognised": [],
+          "notices": []
+        }
+      }
+    ],
+    "modelCalls": [
+      {
+        "ms": 14121,
+        "toolResultsShown": [],
+        "content": null,
+        "toolCalls": [
+          {
+            "name": "get_order",
+            "arguments": "{\"order_id\":\"ORD-1005\"}"
+          }
+        ],
+        "usage": {
+          "inputTokens": 1760,
+          "outputTokens": 46
+        }
+      },
+      {
+        "ms": 16044,
+        "toolResultsShown": [
+          "{\"order_id\":\"ORD-1005\",\"status\":\"delivered\",\"placed\":\"7 Nov 2026\",\"shipped\":\"8 Nov 2026\",\"delivered\":\"10 Nov 2026\",\"total_paid\":\"S$131.60\",\"shipping_paid\":\"free\",\"paid_with\":\"Mastercard ending 5599\",\"items\":[{\"line_id\":\"ORD-1005-1\",\"name\":\"Monsoon Rain Jacket\",\"size\":\"L\",\"colour\":\"Navy\",\"qty\":1,\"paid_each\":\"S$104.30\",\"bought_on_sale\":true,\"options\":{\"refund\":\"not available: SALE_ITEM_EXCHANGE_ONLY\",\"refund_if_faulty\":\"possible, needs a team review first\",\"exchange\":\"available now\"}},{\"line_id\":\"ORD-1005-2\",\"name\":\"Batik Print Cap\",\"size\":\"One Size\",\"colour\":\"Indigo\",\"qty\":1,\"paid_each\":\"S$27.30\",\"bought_on_sale\":true,\"options\":{\"refund\":\"not available: SALE_ITEM_EXCHANGE_ONLY\",\"refund_if_faulty\":\"available now\",\"exchange\":\"available now\"}}],\"cancel_order\":\"not available: ALREADY_DELIVERED\"}"
+        ],
+        "content": "I’m sorry, but a sale item can’t be refunded just because you’ve changed your mind. The rain jacket is eligible for an exchange to a different size or colour, or a refund only if it’s faulty. Let me know if you’d like to exchange it, or if there’s a fault you’d like to report.",
+        "toolCalls": [],
+        "usage": {
+          "inputTokens": 2019,
+          "outputTokens": 151
+        }
+      }
+    ],
+    "db": {
+      "actions": [],
+      "escalations": [],
+      "gatewayRefunds": [],
+      "ledgerOrders": [],
+      "ledgerLines": [],
+      "notifications": [],
+      "riskEvents": [],
+      "cancelledOrders": [],
+      "audit": [
+        {
+          "chain_id": "cust:C002#default",
+          "seq": 1,
+          "trace_id": "trace-0001",
+          "event": "message_in",
+          "data": {
+            "channel": "eval-live",
+            "identity": {
+              "key": "cust:C002",
+              "kind": "customer"
+            },
+            "injectionSignals": [],
+            "redactions": [],
+            "text": "changed my mind about the rain jacket in ORD-1005, pls just refund it",
+            "truncated": false
+          }
+        },
+        {
+          "chain_id": "cust:C002#default",
+          "seq": 2,
+          "trace_id": "trace-0001",
+          "event": "llm_call",
+          "data": {
+            "content": null,
+            "model": "openai/gpt-oss-120b",
+            "step": 1,
+            "toolCalls": [
+              {
+                "arguments": "{\"order_id\":\"ORD-1005\"}",
+                "name": "get_order"
+              }
+            ],
+            "usage": {
+              "inputTokens": 1760,
+              "outputTokens": 46
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C002#default",
+          "seq": 3,
+          "trace_id": "trace-0001",
+          "event": "tool_call",
+          "data": {
+            "args": {
+              "order_id": "ORD-1005"
+            },
+            "ignoredArgs": [],
+            "name": "get_order",
+            "result": {
+              "cancel_order": "not available: ALREADY_DELIVERED",
+              "delivered": "10 Nov 2026",
+              "items": [
+                {
+                  "bought_on_sale": true,
+                  "colour": "Navy",
+                  "line_id": "ORD-1005-1",
+                  "name": "Monsoon Rain Jacket",
+                  "options": {
+                    "exchange": "available now",
+                    "refund": "not available: SALE_ITEM_EXCHANGE_ONLY",
+                    "refund_if_faulty": "possible, needs a team review first"
+                  },
+                  "paid_each": "S$104.30",
+                  "qty": 1,
+                  "size": "L"
+                },
+                {
+                  "bought_on_sale": true,
+                  "colour": "Indigo",
+                  "line_id": "ORD-1005-2",
+                  "name": "Batik Print Cap",
+                  "options": {
+                    "exchange": "available now",
+                    "refund": "not available: SALE_ITEM_EXCHANGE_ONLY",
+                    "refund_if_faulty": "available now"
+                  },
+                  "paid_each": "S$27.30",
+                  "qty": 1,
+                  "size": "One Size"
+                }
+              ],
+              "order_id": "ORD-1005",
+              "paid_with": "Mastercard ending 5599",
+              "placed": "7 Nov 2026",
+              "shipped": "8 Nov 2026",
+              "shipping_paid": "free",
+              "status": "delivered",
+              "total_paid": "S$131.60"
+            },
+            "step": 1
+          }
+        },
+        {
+          "chain_id": "cust:C002#default",
+          "seq": 4,
+          "trace_id": "trace-0001",
+          "event": "llm_call",
+          "data": {
+            "content": "I’m sorry, but a sale item can’t be refunded just because you’ve changed your mind. The rain jacket is eligible for an exchange to a different size or colour, or a refund only if it’s faulty. Let me know if you’d like to exchange it, or if there’s a fault you’d like to report.",
+            "model": "openai/gpt-oss-120b",
+            "step": 2,
+            "toolCalls": [],
+            "usage": {
+              "inputTokens": 2019,
+              "outputTokens": 151
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C002#default",
+          "seq": 5,
+          "trace_id": "trace-0001",
+          "event": "message_out",
+          "data": {
+            "actions": [],
+            "duplicatesRecognised": [],
+            "notices": [],
+            "reply": "I’m sorry, but a sale item can’t be refunded just because you’ve changed your mind. The rain jacket is eligible for an exchange to a different size or colour, or a refund only if it’s faulty. Let me know if you’d like to exchange it, or if there’s a fault you’d like to report."
+          }
+        }
+      ]
+    }
+  }
+}

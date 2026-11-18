@@ -1,0 +1,10 @@
+{
+  "id": "live-policy-question",
+  "guards": "The agent states the wrong return policy",
+  "status": "ERROR",
+  "failedCriteria": [],
+  "error": "EvalInfraError: Not run: the suite's 180s time budget was used up by earlier cases (provider rate limits slow each model call).",
+  "durationMs": 0,
+  "criteria": [],
+  "evidence": {}
+}

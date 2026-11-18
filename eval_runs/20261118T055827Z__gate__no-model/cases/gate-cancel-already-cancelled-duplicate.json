@@ -1,0 +1,180 @@
+{
+  "id": "gate-cancel-already-cancelled-duplicate",
+  "guards": "Cancelling twice refunds twice",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 72,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DUPLICATE",
+      "actual": "DUPLICATE",
+      "pass": true
+    },
+    {
+      "name": "reason code ALREADY_CANCELLED",
+      "expected": "contains \"ALREADY_CANCELLED\"",
+      "actual": [
+        "ALREADY_CANCELLED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "points at the existing action",
+      "expected": "ACT-000001",
+      "actual": "ACT-000001",
+      "pass": true
+    },
+    {
+      "name": "refused decisions carry no idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Order ORD-1004 was already cancelled on 18 Nov 2026 (reference ACT-000001) and S$139.00 was refunded to Visa ending 4242. Nothing further is needed.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C001"
+    },
+    "identity": {
+      "key": "cust:C001",
+      "kind": "customer",
+      "customerId": "C001",
+      "email": "aisha.rahman@example.com",
+      "name": "Aisha Rahman"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "cancellation",
+      "orderId": "ORD-1004"
+    },
+    "decision": {
+      "outcome": "DUPLICATE",
+      "codes": [
+        "ALREADY_CANCELLED"
+      ],
+      "publicCode": "ALREADY_CANCELLED",
+      "say": "Order ORD-1004 was already cancelled on 18 Nov 2026 (reference ACT-000001) and S$139.00 was refunded to Visa ending 4242. Nothing further is needed.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": null,
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": "ACT-000001",
+      "existingEscalationId": null,
+      "effectiveReason": null,
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "orderStatus": "cancelled"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": [
+      {
+        "id": "ACT-000001",
+        "type": "cancellation",
+        "status": "executed",
+        "customer_key": "cust:C001",
+        "order_id": "ORD-1004",
+        "line_id": null,
+        "qty": 0,
+        "amount_cents": 13900,
+        "reason": null,
+        "idempotency_key": "cancellation:ORD-1004",
+        "codes": [
+          "ALL_CHECKS_PASSED"
+        ],
+        "origin": "agent",
+        "approved_by": null,
+        "escalation_id": null,
+        "external_ref": "RFND-000001",
+        "details": {
+          "paymentMethod": "Visa ending 4242",
+          "cancellationRef": "CANC-000001"
+        }
+      }
+    ]
+  }
+}

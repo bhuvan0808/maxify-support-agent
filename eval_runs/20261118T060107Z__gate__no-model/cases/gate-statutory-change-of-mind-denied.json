@@ -1,0 +1,161 @@
+{
+  "id": "gate-statutory-change-of-mind-denied",
+  "guards": "Change of mind on day 60 is refunded",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 11,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code RETURN_WINDOW_EXPIRED",
+      "expected": "contains \"RETURN_WINDOW_EXPIRED\"",
+      "actual": [
+        "RETURN_WINDOW_EXPIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "alternatives offered",
+      "expected": "matches /faulty/i",
+      "actual": "If the item is faulty, describe the fault and our team will look into it.",
+      "pass": true
+    },
+    {
+      "name": "refused decisions carry no idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "This item was delivered on 19 Sep 2026 and our 30-day return window closed on 19 Oct 2026, so it can no longer be returned for a refund.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C003"
+    },
+    "identity": {
+      "key": "cust:C003",
+      "kind": "customer",
+      "customerId": "C003",
+      "email": "priya.nair@example.com",
+      "name": "Priya Nair"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1009",
+      "lineId": "ORD-1009-1",
+      "reason": "changed_mind"
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "RETURN_WINDOW_EXPIRED"
+      ],
+      "publicCode": "RETURN_WINDOW_EXPIRED",
+      "say": "This item was delivered on 19 Sep 2026 and our 30-day return window closed on 19 Oct 2026, so it can no longer be returned for a refund.",
+      "alternatives": [
+        "If the item is faulty, describe the fault and our team will look into it."
+      ],
+      "hint": null,
+      "amountCents": 13900,
+      "qty": 1,
+      "lineId": "ORD-1009-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 60,
+        "deliveredOn": "19 Sep 2026",
+        "windowClosesOn": "19 Oct 2026",
+        "inWindow": false,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": false,
+        "hygiene": false,
+        "unitPaidCents": 13900
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "id": "gate-exchange-no-target",
+  "guards": "The system guesses a replacement size",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 17,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code EXCHANGE_TARGET_REQUIRED",
+      "expected": "contains \"EXCHANGE_TARGET_REQUIRED\"",
+      "actual": [
+        "EXCHANGE_TARGET_REQUIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "refused decisions carry no idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Which size or colour would they like instead? In stock: 30 Khaki, 30 Navy, 32 Khaki, 32 Navy, 34 Navy, 36 Navy.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "guestEmail": "guest.lee@example.com"
+    },
+    "identity": {
+      "key": "guest:guest.lee@example.com",
+      "kind": "guest",
+      "customerId": null,
+      "email": "guest.lee@example.com",
+      "name": null
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "exchange",
+      "orderId": "ORD-1022",
+      "lineId": "ORD-1022-1",
+      "reason": "wrong_size_or_fit"
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "EXCHANGE_TARGET_REQUIRED"
+      ],
+      "publicCode": "EXCHANGE_TARGET_REQUIRED",
+      "say": "Which size or colour would they like instead? In stock: 30 Khaki, 30 Navy, 32 Khaki, 32 Navy, 34 Navy, 36 Navy.",
+      "alternatives": [],
+      "hint": "Ask the customer which size or colour they want, then call again with new_size and/or new_colour.",
+      "amountCents": 0,
+      "qty": 1,
+      "lineId": "ORD-1022-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "wrong_size_or_fit",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 7,
+        "deliveredOn": "11 Nov 2026",
+        "windowClosesOn": "11 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": true,
+        "hygiene": false
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 1,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

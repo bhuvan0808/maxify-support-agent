@@ -1,0 +1,89 @@
+{
+  "id": "serial-refunder-to-human",
+  "guards": "Customer who refunds most orders gets another automatic refund",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "ESCALATED",
+      "actual": "ESCALATED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "CUSTOMER_RISK_REVIEW",
+      "actual": [
+        "CUSTOMER_RISK_REVIEW",
+        "REVIEW_REQUIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "step 1 ticket queue",
+      "expected": "risk_review",
+      "actual": "risk_review",
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1015",
+          "lineId": "ORD-1015-1",
+          "reason": "changed_mind"
+        },
+        "status": "ESCALATED",
+        "decisionCodes": [
+          "CUSTOMER_RISK_REVIEW"
+        ],
+        "toldToModel": {
+          "outcome": "ESCALATED",
+          "code": "REVIEW_REQUIRED",
+          "reference": "ESC-000001",
+          "respond_by": "within one working day",
+          "say": "This request needs a review by our team before it can go ahead. Reference ESC-000001. The team will reply within one working day.",
+          "note": "Nothing has been refunded or changed yet. Do not promise the result of the review."
+        },
+        "actionId": null,
+        "escalationId": "ESC-000001"
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 4
+    }
+  }
+}

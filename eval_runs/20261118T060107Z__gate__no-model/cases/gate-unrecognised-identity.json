@@ -1,0 +1,145 @@
+{
+  "id": "gate-unrecognised-identity",
+  "guards": "An unknown customer ID can act on orders",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 11,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code IDENTITY_NOT_RECOGNISED",
+      "expected": "contains \"IDENTITY_NOT_RECOGNISED\"",
+      "actual": [
+        "IDENTITY_NOT_RECOGNISED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "refused decisions carry no idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "I can't find an account or any orders for these details, so I can't act on an order.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C999"
+    },
+    "identity": {
+      "key": "unknown:C999",
+      "kind": "unrecognised",
+      "customerId": null,
+      "email": null,
+      "name": null
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1001",
+      "lineId": "ORD-1001-1",
+      "reason": "changed_mind"
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "IDENTITY_NOT_RECOGNISED"
+      ],
+      "publicCode": "IDENTITY_NOT_RECOGNISED",
+      "say": "I can't find an account or any orders for these details, so I can't act on an order.",
+      "alternatives": [],
+      "hint": "Ask the customer to check the customer ID or the email address used at checkout.",
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-1001-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 0,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

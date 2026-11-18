@@ -1,0 +1,84 @@
+{
+  "id": "sale-item-change-of-mind-denied",
+  "guards": "Refunding a sale item that is not faulty",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "SALE_ITEM_EXCHANGE_ONLY",
+      "actual": [
+        "SALE_ITEM_EXCHANGE_ONLY",
+        "SALE_ITEM_EXCHANGE_ONLY"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1005",
+          "lineId": "ORD-1005-1",
+          "reason": "changed_mind"
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "SALE_ITEM_EXCHANGE_ONLY"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "SALE_ITEM_EXCHANGE_ONLY",
+          "say": "Monsoon Rain Jacket was bought on sale. Sale items can be exchanged for another size or colour, but can't be refunded unless the item is faulty.",
+          "alternatives": [
+            "Exchange it for another size or colour (request_exchange).",
+            "If the item is faulty, describe the fault."
+          ]
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 2
+    }
+  }
+}

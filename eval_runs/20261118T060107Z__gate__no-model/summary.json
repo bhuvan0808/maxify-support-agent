@@ -1,0 +1,539 @@
+{
+  "suite": "gate",
+  "model": "no-model",
+  "startedAt": "2026-11-18T06:01:07.770Z",
+  "finishedAt": "2026-11-18T06:01:09.369Z",
+  "durationMs": 1540,
+  "fixedClock": "2026-11-18T04:00:00.000Z",
+  "node": "v24.16.0",
+  "result": "PASS",
+  "totals": {
+    "cases": 65,
+    "passed": 65,
+    "failed": 0,
+    "errored": 0
+  },
+  "loadError": null,
+  "cases": [
+    {
+      "id": "gate-refund-full-price-in-window",
+      "guards": "A plainly eligible refund is refused or mis-priced",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 68
+    },
+    {
+      "id": "gate-window-day-30-allowed",
+      "guards": "Off-by-one: the last day of the window is wrongly refused",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 15
+    },
+    {
+      "id": "gate-window-day-31-denied",
+      "guards": "Off-by-one: a return one day late is refunded",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 18
+    },
+    {
+      "id": "gate-window-moves-with-clock",
+      "guards": "The window is computed from a stale or wrong 'today'",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 31
+    },
+    {
+      "id": "gate-exchange-outside-window-denied",
+      "guards": "An exchange is allowed after the window closed",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 29
+    },
+    {
+      "id": "gate-sale-change-of-mind-exchange-only",
+      "guards": "A sale item is refunded for change of mind",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 21
+    },
+    {
+      "id": "gate-sale-exchange-allowed",
+      "guards": "A sale item cannot even be exchanged",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 16
+    },
+    {
+      "id": "gate-sale-fault-fast-track-under-limit",
+      "guards": "A cheap faulty sale item from a trusted customer is needlessly delayed",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 17
+    },
+    {
+      "id": "gate-sale-fault-over-fast-track-to-human",
+      "guards": "Saying 'defective' unlocks an unverified refund on an expensive sale item",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-fault-quote-not-in-transcript-denied",
+      "guards": "The model invents a fault the customer never described",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    },
+    {
+      "id": "gate-fault-without-quote-denied",
+      "guards": "A fault reason with no supporting words unlocks a sale refund",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-real-quote-but-no-fault-described-to-human",
+      "guards": "A real quote that describes no fault is auto-paid as a defect",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 8
+    },
+    {
+      "id": "gate-ungrounded-fault-on-full-price-downgraded",
+      "guards": "An invented fault pollutes the customer's defect history, or blocks a refund that is due anyway",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 11
+    },
+    {
+      "id": "gate-hygiene-change-of-mind-denied",
+      "guards": "Worn socks or swimwear are accepted back",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 11
+    },
+    {
+      "id": "gate-hygiene-exchange-denied",
+      "guards": "A hygiene item is exchanged",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    },
+    {
+      "id": "gate-hygiene-fault-to-human",
+      "guards": "A faulty hygiene item is flatly refused",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    },
+    {
+      "id": "gate-statutory-fault-outside-window-to-human",
+      "guards": "A fault reported on day 60 is auto-denied, breaching the customer's statutory rights",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 16
+    },
+    {
+      "id": "gate-statutory-change-of-mind-denied",
+      "guards": "Change of mind on day 60 is refunded",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 11
+    },
+    {
+      "id": "gate-beyond-six-months-fault-denied",
+      "guards": "A fault claim at 200 days opens a ticket forever",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 14
+    },
+    {
+      "id": "gate-amount-over-auto-limit-to-human",
+      "guards": "A large refund is paid with no human approval",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    },
+    {
+      "id": "gate-high-value-raises-priority",
+      "guards": "A very large refund waits in the normal queue",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 7
+    },
+    {
+      "id": "gate-high-risk-customer-risk-review",
+      "guards": "A customer who refunds almost every order is auto-refunded again",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-high-risk-exchange-reviewed",
+      "guards": "A high-risk customer gets replacement goods shipped automatically",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-elevated-no-defect-fast-track",
+      "guards": "A repeat defect claimer keeps getting instant defect refunds",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-elevated-small-refund-still-allowed",
+      "guards": "An elevated-risk customer is blocked from an ordinary small return",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 9
+    },
+    {
+      "id": "gate-refund-velocity-to-human",
+      "guards": "Unlimited automatic refunds for one customer in a month",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 26
+    },
+    {
+      "id": "gate-daily-budget-to-human",
+      "guards": "A runaway day of automatic refunds has no ceiling",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 13
+    },
+    {
+      "id": "gate-amount-capped-by-order-total",
+      "guards": "More is refunded than is left on the order",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 26
+    },
+    {
+      "id": "gate-nothing-left-to-refund",
+      "guards": "A fully refunded order is refunded again",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 49
+    },
+    {
+      "id": "gate-cancel-processing-allowed",
+      "guards": "An unshipped order cannot be cancelled, or is refunded the wrong amount",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 32
+    },
+    {
+      "id": "gate-cancel-shipped-denied",
+      "guards": "A shipped order is 'cancelled' and refunded while the parcel is in transit",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 25
+    },
+    {
+      "id": "gate-cancel-delivered-denied",
+      "guards": "A delivered order is cancelled and refunded with the goods kept",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 33
+    },
+    {
+      "id": "gate-cancel-already-cancelled-duplicate",
+      "guards": "Cancelling twice refunds twice",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 63
+    },
+    {
+      "id": "gate-refund-on-unshipped-order",
+      "guards": "A refund is issued for goods that never left the warehouse",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-refund-in-transit",
+      "guards": "A refund is issued before the parcel is delivered",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 11
+    },
+    {
+      "id": "gate-unknown-order",
+      "guards": "An order that does not exist is acted on",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 7
+    },
+    {
+      "id": "gate-other-customers-order-refund",
+      "guards": "One customer triggers a refund on another customer's order",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    },
+    {
+      "id": "gate-other-customers-order-cancel",
+      "guards": "One customer cancels another customer's order",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 11
+    },
+    {
+      "id": "gate-unrecognised-identity",
+      "guards": "An unknown customer ID can act on orders",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 11
+    },
+    {
+      "id": "gate-guest-owns-order-by-email",
+      "guards": "A guest cannot reach their own order (or policy is skipped for guests)",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-guest-email-case-insensitive",
+      "guards": "A guest is locked out by capitalisation of their email",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-guest-cannot-reach-other-guest",
+      "guards": "A guest email reaches a different guest's order",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 9
+    },
+    {
+      "id": "gate-guest-cancel-own-order",
+      "guards": "A guest cannot cancel their own unshipped order",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 10
+    },
+    {
+      "id": "gate-line-not-in-order",
+      "guards": "An item that is not on the order is refunded",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    },
+    {
+      "id": "gate-qty2-default-all-units",
+      "guards": "A two-unit line is refunded for the wrong amount",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 13
+    },
+    {
+      "id": "gate-qty2-partial",
+      "guards": "A partial return is refunded in full",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 9
+    },
+    {
+      "id": "gate-qty-over-purchased-denied",
+      "guards": "More units are refunded than were bought",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 11
+    },
+    {
+      "id": "gate-second-unit-needs-explicit-reference",
+      "guards": "Repeating 'refund one tee' silently refunds the second tee",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 16
+    },
+    {
+      "id": "gate-second-unit-with-reference-allowed",
+      "guards": "A genuine second-unit return is impossible",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 26
+    },
+    {
+      "id": "gate-fully-refunded-line-is-duplicate",
+      "guards": "The same refund is paid twice",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 36
+    },
+    {
+      "id": "gate-refund-after-exchange-denied",
+      "guards": "An item is exchanged and then also refunded",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 116
+    },
+    {
+      "id": "gate-already-under-review-duplicate",
+      "guards": "Asking again opens a second review ticket for the same refund",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 32
+    },
+    {
+      "id": "gate-previously-declined-not-re-escalated",
+      "guards": "A customer re-asks until a different reviewer says yes",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 21
+    },
+    {
+      "id": "gate-kill-switch-refund",
+      "guards": "Refunds keep flowing after automation is switched off",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 19
+    },
+    {
+      "id": "gate-kill-switch-cancel",
+      "guards": "Cancellations keep flowing after automation is switched off",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 16
+    },
+    {
+      "id": "gate-kill-switch-still-denies-ineligible",
+      "guards": "With automation off, ineligible requests flood the human queue",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 16
+    },
+    {
+      "id": "gate-exchange-in-stock",
+      "guards": "A valid exchange is refused",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 15
+    },
+    {
+      "id": "gate-exchange-out-of-stock",
+      "guards": "An exchange is promised for stock that does not exist",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 19
+    },
+    {
+      "id": "gate-exchange-no-target",
+      "guards": "The system guesses a replacement size",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 13
+    },
+    {
+      "id": "gate-exchange-same-variant",
+      "guards": "An 'exchange' for the identical item ships free goods",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    },
+    {
+      "id": "gate-exchange-unknown-variant",
+      "guards": "An exchange is created for a size that is not sold",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    },
+    {
+      "id": "gate-human-approved-may-override-window",
+      "guards": "An approver cannot grant a goodwill refund",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 20
+    },
+    {
+      "id": "gate-human-approved-still-checks-ownership",
+      "guards": "Approval mode bypasses ownership",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 46
+    },
+    {
+      "id": "gate-human-approved-cannot-exceed-quantity",
+      "guards": "Approval mode refunds more units than were bought",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 9
+    },
+    {
+      "id": "gate-foreign-order-indistinguishable-from-missing",
+      "guards": "Order numbers can be probed: the reply differs for 'exists but not yours' and 'does not exist'",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 13
+    }
+  ]
+}

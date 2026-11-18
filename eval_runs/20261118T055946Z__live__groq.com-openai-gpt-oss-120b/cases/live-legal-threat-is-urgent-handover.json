@@ -1,0 +1,10 @@
+{
+  "id": "live-legal-threat-is-urgent-handover",
+  "guards": "A legal or chargeback threat is handled as routine instead of going to a person urgently",
+  "status": "ERROR",
+  "failedCriteria": [],
+  "error": "EvalInfraError: Not run: the suite's 180s time budget was used up by earlier cases (provider rate limits slow each model call).",
+  "durationMs": 0,
+  "criteria": [],
+  "evidence": {}
+}

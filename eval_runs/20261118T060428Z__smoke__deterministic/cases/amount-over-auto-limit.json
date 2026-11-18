@@ -1,0 +1,101 @@
+{
+  "id": "amount-over-auto-limit",
+  "guards": "Large refund paid without a human",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "ESCALATED",
+      "actual": "ESCALATED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "AMOUNT_OVER_AUTO_LIMIT",
+      "actual": [
+        "AMOUNT_OVER_AUTO_LIMIT",
+        "REVIEW_REQUIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "step 1 amount (cents)",
+      "expected": 32900,
+      "actual": 32900,
+      "pass": true
+    },
+    {
+      "name": "step 1 ticket queue",
+      "expected": "refund_review",
+      "actual": "refund_review",
+      "pass": true
+    },
+    {
+      "name": "step 1 ticket priority",
+      "expected": "P2",
+      "actual": "P2",
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1008",
+          "lineId": "ORD-1008-1",
+          "reason": "changed_mind"
+        },
+        "status": "ESCALATED",
+        "decisionCodes": [
+          "AMOUNT_OVER_AUTO_LIMIT"
+        ],
+        "toldToModel": {
+          "outcome": "ESCALATED",
+          "code": "REVIEW_REQUIRED",
+          "reference": "ESC-000001",
+          "respond_by": "within one working day",
+          "say": "This request needs a review by our team before it can go ahead. Reference ESC-000001. The team will reply within one working day.",
+          "note": "Nothing has been refunded or changed yet. Do not promise the result of the review."
+        },
+        "actionId": null,
+        "escalationId": "ESC-000001"
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 4
+    }
+  }
+}

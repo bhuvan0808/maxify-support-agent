@@ -109,17 +109,29 @@ export interface OutputCheck {
  * "Has happened" phrasing for each action type. Written to match affirmative past or
  * perfect forms only, so "has not been refunded" and "will be refunded" do not match.
  */
+/**
+ * Text allowed between the subject of a claim and its verb: anything within the same
+ * sentence. A "." followed by a digit is a decimal point, not the end of a sentence,
+ * so "refund of S$329.00 has been approved" is one claim. (Regression: excluding every
+ * "." here let any false claim that quoted a cents amount past the guard. See
+ * eval_runs/FIX_LOG.md.)
+ */
+const GAP = String.raw`(?:[^.!?\n]|\.(?=\d))`;
+
 const CLAIM_PATTERNS: Record<"refund" | "cancellation" | "exchange", RegExp[]> = {
   refund: [
     /\b(i|we)(?:'ve| have)?(?: just)?\s+(?:now |already |successfully |gone ahead and )*(refunded|(?:issued|processed|initiated|sent|approved|completed) (?:a|the|your|that) (?:full |partial )?refund\b(?!\s+request))/i,
-    /\brefund\b(?!\s+request)(?: of [^.!?\n]{0,25})?\s+(?:has been|was|is now|is being|has now been)\s+(?:successfully )?(issued|processed|approved|completed|initiated|sent|credited|confirmed|made)\b/i,
+    new RegExp(
+      String.raw`\brefund\b(?!\s+request)(?: of ${GAP}{0,25})?\s+(?:has been|was|is now|is being|has now been)\s+(?:successfully )?(issued|processed|approved|completed|initiated|sent|credited|confirmed|made)\b`,
+      "i",
+    ),
     /\b(?:has|have) (?:now |already )?been (?:fully |successfully )?refunded\b/i,
     /\brefund (?:is|will be) on its way\b/i,
-    /\b(?:you'll|you will|you should) (?:see|receive|get) (?:your |the |a )?(?:refund|money)[^.!?\n]{0,40}\b(?:within|in) \d/i,
+    new RegExp(String.raw`\b(?:you'll|you will|you should) (?:see|receive|get) (?:your |the |a )?(?:refund|money)${GAP}{0,40}\b(?:within|in) \d`, "i"),
   ],
   cancellation: [
     /\b(i|we)(?:'ve| have)?(?: just)?\s+(?:now |already |successfully |gone ahead and )*cancell?ed\b/i,
-    /\b(?:order|it)\b[^.!?\n]{0,30}\b(?:has been|was|is now|has now been)\s+(?:successfully )?cancell?ed\b/i,
+    new RegExp(String.raw`\b(?:order|it)\b${GAP}{0,30}\b(?:has been|was|is now|has now been)\s+(?:successfully )?cancell?ed\b`, "i"),
     /\bcancellation (?:has been|is|was) (?:processed|confirmed|completed)\b/i,
   ],
   exchange: [

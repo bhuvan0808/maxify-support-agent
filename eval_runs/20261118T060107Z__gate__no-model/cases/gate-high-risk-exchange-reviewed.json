@@ -1,0 +1,151 @@
+{
+  "id": "gate-high-risk-exchange-reviewed",
+  "guards": "A high-risk customer gets replacement goods shipped automatically",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 10,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "NEEDS_HUMAN",
+      "actual": "NEEDS_HUMAN",
+      "pass": true
+    },
+    {
+      "name": "reason code CUSTOMER_RISK_REVIEW",
+      "expected": "contains \"CUSTOMER_RISK_REVIEW\"",
+      "actual": [
+        "CUSTOMER_RISK_REVIEW"
+      ],
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "This request needs a review by our team before it can go ahead.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C004"
+    },
+    "identity": {
+      "key": "cust:C004",
+      "kind": "customer",
+      "customerId": "C004",
+      "email": "marcus.lim@example.com",
+      "name": "Marcus Lim"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "exchange",
+      "orderId": "ORD-1015",
+      "lineId": "ORD-1015-1",
+      "reason": "wrong_size_or_fit",
+      "newSize": "M"
+    },
+    "decision": {
+      "outcome": "NEEDS_HUMAN",
+      "codes": [
+        "CUSTOMER_RISK_REVIEW"
+      ],
+      "publicCode": "REVIEW_REQUIRED",
+      "say": "This request needs a review by our team before it can go ahead.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 0,
+      "qty": 1,
+      "lineId": "ORD-1015-1",
+      "idempotencyKey": "exchange:ORD-1015-1:u0",
+      "priority": "P2",
+      "escalationCategory": "risk_review",
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "wrong_size_or_fit",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "high",
+        "daysSinceDelivery": 6,
+        "deliveredOn": "12 Nov 2026",
+        "windowClosesOn": "12 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": false,
+        "hygiene": false,
+        "newSize": "M",
+        "newColour": "Sage"
+      }
+    },
+    "risk": {
+      "tier": "high",
+      "signals": [
+        "REFUND_RATE_HIGH(4/5)"
+      ],
+      "refundRate": 0.8,
+      "stats": {
+        "deliveredOrders": 5,
+        "refundedOrders": 4,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

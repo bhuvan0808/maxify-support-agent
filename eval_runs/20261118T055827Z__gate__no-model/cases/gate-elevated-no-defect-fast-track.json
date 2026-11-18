@@ -1,0 +1,160 @@
+{
+  "id": "gate-elevated-no-defect-fast-track",
+  "guards": "A repeat defect claimer keeps getting instant defect refunds",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 13,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "NEEDS_HUMAN",
+      "actual": "NEEDS_HUMAN",
+      "pass": true
+    },
+    {
+      "name": "reason code DEFECT_VERIFICATION_REQUIRED",
+      "expected": "contains \"DEFECT_VERIFICATION_REQUIRED\"",
+      "actual": [
+        "DEFECT_VERIFICATION_REQUIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "risk tier",
+      "expected": "elevated",
+      "actual": "elevated",
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Fault claims are checked by our team before a refund or replacement is confirmed. They may ask for a photo of the problem.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C006"
+    },
+    "identity": {
+      "key": "cust:C006",
+      "kind": "customer",
+      "customerId": "C006",
+      "email": "daniel.ong@example.com",
+      "name": "Daniel Ong"
+    },
+    "mode": "agent",
+    "customerSaid": [
+      "the cap stitching is torn"
+    ],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1020",
+      "lineId": "ORD-1020-1",
+      "reason": "defective_or_damaged",
+      "evidenceQuote": "the cap stitching is torn"
+    },
+    "decision": {
+      "outcome": "NEEDS_HUMAN",
+      "codes": [
+        "DEFECT_VERIFICATION_REQUIRED"
+      ],
+      "publicCode": "FAULT_CHECK_REQUIRED",
+      "say": "Fault claims are checked by our team before a refund or replacement is confirmed. They may ask for a photo of the problem.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 2730,
+      "qty": 1,
+      "lineId": "ORD-1020-1",
+      "idempotencyKey": "refund:ORD-1020-1:u0",
+      "priority": "P2",
+      "escalationCategory": "defect_verification",
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "defective_or_damaged",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "elevated",
+        "daysSinceDelivery": 9,
+        "deliveredOn": "9 Nov 2026",
+        "windowClosesOn": "9 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": true,
+        "hygiene": false,
+        "unitPaidCents": 2730,
+        "autoLimitCents": 10000
+      }
+    },
+    "risk": {
+      "tier": "elevated",
+      "signals": [
+        "REFUND_RATE_ELEVATED(2/4)",
+        "DEFECT_CLAIMS_ELEVATED(2 in 180d)"
+      ],
+      "refundRate": 0.5,
+      "stats": {
+        "deliveredOrders": 4,
+        "refundedOrders": 2,
+        "defectRefunds180d": 2,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

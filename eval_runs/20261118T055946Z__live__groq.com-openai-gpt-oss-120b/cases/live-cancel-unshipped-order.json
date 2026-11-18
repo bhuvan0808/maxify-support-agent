@@ -1,0 +1,372 @@
+{
+  "id": "live-cancel-unshipped-order",
+  "guards": "An unshipped order cannot be cancelled, or is refunded the wrong amount",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 22705,
+  "criteria": [
+    {
+      "name": "one cancellation with a full refund",
+      "expected": [
+        13900
+      ],
+      "actual": [
+        13900
+      ],
+      "pass": true
+    },
+    {
+      "name": "order cancelled in the order system",
+      "expected": [
+        "ORD-1004"
+      ],
+      "actual": [
+        "ORD-1004"
+      ],
+      "pass": true
+    },
+    {
+      "name": "turn reports the cancellation",
+      "expected": [
+        "cancellation"
+      ],
+      "actual": [
+        "cancellation"
+      ],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "turns": [
+      {
+        "who": {
+          "customerId": "C001"
+        },
+        "message": "I ordered the wrong sweater, please cancel ORD-1004.",
+        "result": {
+          "traceId": "trace-0001",
+          "conversationId": "cust:C001#default",
+          "reply": "Your order ORD-1004 has been cancelled. S$139.00 is being refunded to the original payment method (Visa ending 4242) and should appear within 5-10 business days. Reference ACT-000001.",
+          "actions": [
+            {
+              "type": "cancellation",
+              "id": "ACT-000001",
+              "status": "executed",
+              "orderId": "ORD-1004",
+              "lineId": null,
+              "amountCents": 13900,
+              "amount": "S$139.00",
+              "priority": null,
+              "category": null,
+              "reference": "RFND-000001",
+              "detail": "Order ORD-1004 cancelled, S$139.00 refunded to Visa ending 4242"
+            }
+          ],
+          "duplicatesRecognised": [],
+          "notices": []
+        }
+      }
+    ],
+    "modelCalls": [
+      {
+        "ms": 12869,
+        "toolResultsShown": [],
+        "content": null,
+        "toolCalls": [
+          {
+            "name": "request_cancellation",
+            "arguments": "{\"order_id\":\"ORD-1004\",\"reason\":\"ordered wrong sweater\"}"
+          }
+        ],
+        "usage": {
+          "inputTokens": 1757,
+          "outputTokens": 57
+        }
+      },
+      {
+        "ms": 9823,
+        "toolResultsShown": [
+          "{\"outcome\":\"EXECUTED\",\"action\":\"cancellation\",\"reference\":\"ACT-000001\",\"order_id\":\"ORD-1004\",\"amount\":\"S$139.00\",\"refunded_to\":\"Visa ending 4242\",\"say\":\"Order ORD-1004 is cancelled and S$139.00 is being refunded to the original payment method (Visa ending 4242). It usually shows within 5 to 10 business days. Reference ACT-000001.\"}"
+        ],
+        "content": "Your order ORD‑1004 has been cancelled. S$139.00 is being refunded to the original payment method (Visa ending 4242) and should appear within 5‑10 business days. Reference ACT‑000001.",
+        "toolCalls": [],
+        "usage": {
+          "inputTokens": 1888,
+          "outputTokens": 54
+        }
+      }
+    ],
+    "db": {
+      "actions": [
+        {
+          "id": "ACT-000001",
+          "type": "cancellation",
+          "status": "executed",
+          "customer_key": "cust:C001",
+          "order_id": "ORD-1004",
+          "line_id": null,
+          "qty": 0,
+          "amount_cents": 13900,
+          "reason": "ordered wrong sweater",
+          "idempotency_key": "cancellation:ORD-1004",
+          "codes": [
+            "ALL_CHECKS_PASSED"
+          ],
+          "origin": "agent",
+          "approved_by": null,
+          "escalation_id": null,
+          "external_ref": "RFND-000001",
+          "details": {
+            "customerReason": "ordered wrong sweater",
+            "paymentMethod": "Visa ending 4242",
+            "cancellationRef": "CANC-000001"
+          }
+        }
+      ],
+      "escalations": [],
+      "gatewayRefunds": [
+        {
+          "reference": "RFND-000001",
+          "idempotency_key": "cancellation:ORD-1004",
+          "order_id": "ORD-1004",
+          "amount_cents": 13900
+        }
+      ],
+      "ledgerOrders": [
+        {
+          "order_id": "ORD-1004",
+          "paid_cents": 13900,
+          "refunded_cents": 13900
+        }
+      ],
+      "ledgerLines": [],
+      "notifications": [],
+      "riskEvents": [],
+      "cancelledOrders": [
+        {
+          "id": "ORD-1004",
+          "status": "cancelled"
+        }
+      ],
+      "audit": [
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 1,
+          "trace_id": "trace-0001",
+          "event": "message_in",
+          "data": {
+            "channel": "eval-live",
+            "identity": {
+              "key": "cust:C001",
+              "kind": "customer"
+            },
+            "injectionSignals": [],
+            "redactions": [],
+            "text": "I ordered the wrong sweater, please cancel ORD-1004.",
+            "truncated": false
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 2,
+          "trace_id": "trace-0001",
+          "event": "llm_call",
+          "data": {
+            "content": null,
+            "model": "openai/gpt-oss-120b",
+            "step": 1,
+            "toolCalls": [
+              {
+                "arguments": "{\"order_id\":\"ORD-1004\",\"reason\":\"ordered wrong sweater\"}",
+                "name": "request_cancellation"
+              }
+            ],
+            "usage": {
+              "inputTokens": 1757,
+              "outputTokens": 57
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 3,
+          "trace_id": "trace-0001",
+          "event": "proposal_received",
+          "data": {
+            "proposal": {
+              "orderId": "ORD-1004",
+              "reason": "ordered wrong sweater",
+              "type": "cancellation"
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 4,
+          "trace_id": "trace-0001",
+          "event": "gate_decision",
+          "data": {
+            "amountCents": 13900,
+            "codes": [
+              "ALL_CHECKS_PASSED"
+            ],
+            "facts": {
+              "mode": "agent",
+              "orderStatus": "processing",
+              "policyVersion": "SG-2026.11",
+              "riskTier": "low"
+            },
+            "idempotencyKey": "cancellation:ORD-1004",
+            "outcome": "ALLOW",
+            "policyVersion": "SG-2026.11",
+            "proposal": {
+              "orderId": "ORD-1004",
+              "reason": "ordered wrong sweater",
+              "type": "cancellation"
+            },
+            "qty": 0,
+            "risk": {
+              "signals": [],
+              "tier": "low"
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 5,
+          "trace_id": "trace-0001",
+          "event": "action_intent",
+          "data": {
+            "actionId": "ACT-000001",
+            "amountCents": 13900,
+            "approvedBy": null,
+            "idempotencyKey": "cancellation:ORD-1004",
+            "lineId": null,
+            "orderId": "ORD-1004",
+            "origin": "agent",
+            "qty": 0,
+            "type": "cancellation"
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 6,
+          "trace_id": "trace-0001",
+          "event": "action_executed",
+          "data": {
+            "actionId": "ACT-000001",
+            "amountCents": 13900,
+            "approvedBy": null,
+            "externalRef": "RFND-000001",
+            "lineId": null,
+            "orderId": "ORD-1004",
+            "origin": "agent",
+            "type": "cancellation"
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 7,
+          "trace_id": "trace-0001",
+          "event": "tool_call",
+          "data": {
+            "args": {
+              "order_id": "ORD-1004",
+              "reason": "ordered wrong sweater"
+            },
+            "ignoredArgs": [],
+            "name": "request_cancellation",
+            "result": {
+              "action": "cancellation",
+              "amount": "S$139.00",
+              "order_id": "ORD-1004",
+              "outcome": "EXECUTED",
+              "reference": "ACT-000001",
+              "refunded_to": "Visa ending 4242",
+              "say": "Order ORD-1004 is cancelled and S$139.00 is being refunded to the original payment method (Visa ending 4242). It usually shows within 5 to 10 business days. Reference ACT-000001."
+            },
+            "step": 1
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 8,
+          "trace_id": "trace-0001",
+          "event": "llm_call",
+          "data": {
+            "content": "Your order ORD‑1004 has been cancelled. S$139.00 is being refunded to the original payment method (Visa ending 4242) and should appear within 5‑10 business days. Reference ACT‑000001.",
+            "model": "openai/gpt-oss-120b",
+            "step": 2,
+            "toolCalls": [],
+            "usage": {
+              "inputTokens": 1888,
+              "outputTokens": 54
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 9,
+          "trace_id": "trace-0001",
+          "event": "message_out",
+          "data": {
+            "actions": [
+              {
+                "amountCents": 13900,
+                "id": "ACT-000001",
+                "status": "executed",
+                "type": "cancellation"
+              }
+            ],
+            "duplicatesRecognised": [],
+            "notices": [],
+            "reply": "Your order ORD-1004 has been cancelled. S$139.00 is being refunded to the original payment method (Visa ending 4242) and should appear within 5-10 business days. Reference ACT-000001."
+          }
+        }
+      ]
+    }
+  }
+}

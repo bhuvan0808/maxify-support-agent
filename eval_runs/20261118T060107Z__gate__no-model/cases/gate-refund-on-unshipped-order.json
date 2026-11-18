@@ -1,0 +1,153 @@
+{
+  "id": "gate-refund-on-unshipped-order",
+  "guards": "A refund is issued for goods that never left the warehouse",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 10,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code NOT_SHIPPED_YET",
+      "expected": "contains \"NOT_SHIPPED_YET\"",
+      "actual": [
+        "NOT_SHIPPED_YET"
+      ],
+      "pass": true
+    },
+    {
+      "name": "alternatives offered",
+      "expected": "matches /cancel/i",
+      "actual": "Cancel the order for a full refund (request_cancellation).",
+      "pass": true
+    },
+    {
+      "name": "refused decisions carry no idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Order ORD-1004 hasn't shipped yet, so it can be cancelled rather than returned.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C001"
+    },
+    "identity": {
+      "key": "cust:C001",
+      "kind": "customer",
+      "customerId": "C001",
+      "email": "aisha.rahman@example.com",
+      "name": "Aisha Rahman"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1004",
+      "lineId": "ORD-1004-1",
+      "reason": "changed_mind"
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "NOT_SHIPPED_YET"
+      ],
+      "publicCode": "NOT_SHIPPED_YET",
+      "say": "Order ORD-1004 hasn't shipped yet, so it can be cancelled rather than returned.",
+      "alternatives": [
+        "Cancel the order for a full refund (request_cancellation)."
+      ],
+      "hint": null,
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-1004-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "id": "gate-qty2-partial",
+  "guards": "A partial return is refunded in full",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 9,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "ALLOW",
+      "actual": "ALLOW",
+      "pass": true
+    },
+    {
+      "name": "amount (cents), computed from the order",
+      "expected": 2990,
+      "actual": 2990,
+      "pass": true
+    },
+    {
+      "name": "quantity",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Refund of S$29.90 to the original payment method (Mastercard ending 5599). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C002"
+    },
+    "identity": {
+      "key": "cust:C002",
+      "kind": "customer",
+      "customerId": "C002",
+      "email": "weijie.tan@example.com",
+      "name": "Wei Jie Tan"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1007",
+      "lineId": "ORD-1007-1",
+      "reason": "changed_mind",
+      "qty": 1
+    },
+    "decision": {
+      "outcome": "ALLOW",
+      "codes": [
+        "ALL_CHECKS_PASSED"
+      ],
+      "publicCode": "APPROVED",
+      "say": "Refund of S$29.90 to the original payment method (Mastercard ending 5599). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 2990,
+      "qty": 1,
+      "lineId": "ORD-1007-1",
+      "idempotencyKey": "refund:ORD-1007-1:u0",
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 12,
+        "deliveredOn": "6 Nov 2026",
+        "windowClosesOn": "6 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": false,
+        "hygiene": false,
+        "unitPaidCents": 2990,
+        "autoLimitCents": 20000
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 2,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

@@ -304,6 +304,10 @@ writeFileSync(
     ``,
   ].join("\n"),
 );
-appendFileSync(join("eval_runs", "INDEX.md"), `- ${summary.startedAt} | smoke | deterministic | ${summary.passed}/${summary.total} passed | ${runDir.replace(/\\/g, "/")}\n`);
+// Same row format as evals/run.ts, so INDEX.md stays one table.
+appendFileSync(
+  join("eval_runs", "INDEX.md"),
+  `| ${summary.startedAt} | smoke | deterministic | ${failed.length ? "FAIL" : "PASS"} | ${summary.passed} | ${summary.failed} | 0 | ${runDir.replace(/\\/g, "/")} |\n`,
+);
 console.log(`\n${summary.passed}/${summary.total} passed. Output: ${runDir}`);
 process.exitCode = failed.length > 0 ? 1 : 0;

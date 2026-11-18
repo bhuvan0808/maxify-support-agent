@@ -1,0 +1,151 @@
+{
+  "id": "gate-real-quote-but-no-fault-described-to-human",
+  "guards": "A real quote that describes no fault is auto-paid as a defect",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 46,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "NEEDS_HUMAN",
+      "actual": "NEEDS_HUMAN",
+      "pass": true
+    },
+    {
+      "name": "reason code DEFECT_VERIFICATION_REQUIRED",
+      "expected": "contains \"DEFECT_VERIFICATION_REQUIRED\"",
+      "actual": [
+        "DEFECT_VERIFICATION_REQUIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Fault claims are checked by our team before a refund or replacement is confirmed. They may ask for a photo of the problem.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C002"
+    },
+    "identity": {
+      "key": "cust:C002",
+      "kind": "customer",
+      "customerId": "C002",
+      "email": "weijie.tan@example.com",
+      "name": "Wei Jie Tan"
+    },
+    "mode": "agent",
+    "customerSaid": [
+      "I want a refund for my cap"
+    ],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1005",
+      "lineId": "ORD-1005-2",
+      "reason": "defective_or_damaged",
+      "evidenceQuote": "I want a refund for my cap"
+    },
+    "decision": {
+      "outcome": "NEEDS_HUMAN",
+      "codes": [
+        "DEFECT_VERIFICATION_REQUIRED"
+      ],
+      "publicCode": "FAULT_CHECK_REQUIRED",
+      "say": "Fault claims are checked by our team before a refund or replacement is confirmed. They may ask for a photo of the problem.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 2730,
+      "qty": 1,
+      "lineId": "ORD-1005-2",
+      "idempotencyKey": "refund:ORD-1005-2:u0",
+      "priority": "P2",
+      "escalationCategory": "defect_verification",
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "defective_or_damaged",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 8,
+        "deliveredOn": "10 Nov 2026",
+        "windowClosesOn": "10 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": true,
+        "hygiene": false,
+        "unitPaidCents": 2730,
+        "autoLimitCents": 20000
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 2,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

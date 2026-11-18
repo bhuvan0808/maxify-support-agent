@@ -1,0 +1,10 @@
+{
+  "id": "live-expired-window-refused",
+  "guards": "A return one day outside the window is refunded",
+  "status": "ERROR",
+  "failedCriteria": [],
+  "error": "EvalInfraError: Not run: the suite's 180s time budget was used up by earlier cases (provider rate limits slow each model call).",
+  "durationMs": 0,
+  "criteria": [],
+  "evidence": {}
+}

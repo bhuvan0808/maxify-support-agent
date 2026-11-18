@@ -1,0 +1,173 @@
+{
+  "id": "gate-window-day-31-denied",
+  "guards": "Off-by-one: a return one day late is refunded",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 18,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code RETURN_WINDOW_EXPIRED",
+      "expected": "contains \"RETURN_WINDOW_EXPIRED\"",
+      "actual": [
+        "RETURN_WINDOW_EXPIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "fact daysSinceDelivery",
+      "expected": 31,
+      "actual": 31,
+      "pass": true
+    },
+    {
+      "name": "fact inWindow",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "name": "refused decisions carry no idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "This item was delivered on 18 Oct 2026 and our 30-day return window closed on 17 Nov 2026, so it can no longer be returned for a refund.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C001"
+    },
+    "identity": {
+      "key": "cust:C001",
+      "kind": "customer",
+      "customerId": "C001",
+      "email": "aisha.rahman@example.com",
+      "name": "Aisha Rahman"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1003",
+      "lineId": "ORD-1003-1",
+      "reason": "changed_mind"
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "RETURN_WINDOW_EXPIRED"
+      ],
+      "publicCode": "RETURN_WINDOW_EXPIRED",
+      "say": "This item was delivered on 18 Oct 2026 and our 30-day return window closed on 17 Nov 2026, so it can no longer be returned for a refund.",
+      "alternatives": [
+        "If the item is faulty, describe the fault and our team will look into it."
+      ],
+      "hint": null,
+      "amountCents": 11900,
+      "qty": 1,
+      "lineId": "ORD-1003-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 31,
+        "deliveredOn": "18 Oct 2026",
+        "windowClosesOn": "17 Nov 2026",
+        "inWindow": false,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": false,
+        "hygiene": false,
+        "unitPaidCents": 11900
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

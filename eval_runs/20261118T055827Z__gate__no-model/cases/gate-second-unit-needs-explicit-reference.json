@@ -1,0 +1,175 @@
+{
+  "id": "gate-second-unit-needs-explicit-reference",
+  "guards": "Repeating 'refund one tee' silently refunds the second tee",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 28,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code CONFIRM_ADDITIONAL_UNITS",
+      "expected": "contains \"CONFIRM_ADDITIONAL_UNITS\"",
+      "actual": [
+        "CONFIRM_ADDITIONAL_UNITS"
+      ],
+      "pass": true
+    },
+    {
+      "name": "points at the existing action",
+      "expected": "ACT-000001",
+      "actual": "ACT-000001",
+      "pass": true
+    },
+    {
+      "name": "refused decisions carry no idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "1 of the 2 units of this item already has a refund on record (reference ACT-000001).",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C002"
+    },
+    "identity": {
+      "key": "cust:C002",
+      "kind": "customer",
+      "customerId": "C002",
+      "email": "weijie.tan@example.com",
+      "name": "Wei Jie Tan"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1007",
+      "lineId": "ORD-1007-1",
+      "reason": "changed_mind",
+      "qty": 1
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "CONFIRM_ADDITIONAL_UNITS"
+      ],
+      "publicCode": "CONFIRM_ADDITIONAL_UNITS",
+      "say": "1 of the 2 units of this item already has a refund on record (reference ACT-000001).",
+      "alternatives": [],
+      "hint": "If the customer is just repeating their earlier request, tell them it was already done. Only if they clearly want to return a further unit, call again with additional_to_action_id=\"ACT-000001\".",
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-1007-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": "ACT-000001",
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0.5,
+      "stats": {
+        "deliveredOrders": 2,
+        "refundedOrders": 1,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 1,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 2990,
+      "customerAutoRefunds30d": 1
+    },
+    "ledgerAfterSetup": [
+      {
+        "id": "ACT-000001",
+        "type": "refund",
+        "status": "executed",
+        "customer_key": "cust:C002",
+        "order_id": "ORD-1007",
+        "line_id": "ORD-1007-1",
+        "qty": 1,
+        "amount_cents": 2990,
+        "reason": "changed_mind",
+        "idempotency_key": "refund:ORD-1007-1:u0",
+        "codes": [
+          "ALL_CHECKS_PASSED"
+        ],
+        "origin": "agent",
+        "approved_by": null,
+        "escalation_id": null,
+        "external_ref": "RFND-000001",
+        "details": {
+          "paymentMethod": "Mastercard ending 5599"
+        }
+      }
+    ]
+  }
+}

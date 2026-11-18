@@ -86,7 +86,9 @@ async function runSuite(name: string, only: string | undefined): Promise<boolean
   const folder = join(ROOT, `${stamp(startedAt)}__${suite.name}__${label}`);
   mkdirSync(join(folder, "cases"), { recursive: true });
 
-  const cases = only ? suite.cases.filter((c) => c.id === only) : suite.cases;
+  // --only takes one case id or a comma-separated list.
+  const wanted = only ? only.split(",").map((s) => s.trim()) : null;
+  const cases = wanted ? suite.cases.filter((c) => wanted.includes(c.id)) : suite.cases;
   const results: CaseResult[] = [];
   const suiteStart = Date.now();
 

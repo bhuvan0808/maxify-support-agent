@@ -1,0 +1,489 @@
+{
+  "id": "live-clear-refund-executes-once",
+  "guards": "A straightforward, eligible refund is not carried out, or is carried out for the wrong amount",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 2017,
+  "criteria": [
+    {
+      "name": "exactly one refund, for the shirt, for what was paid",
+      "expected": [
+        "ORD-1001-1:6900"
+      ],
+      "actual": [
+        "ORD-1001-1:6900"
+      ],
+      "pass": true
+    },
+    {
+      "name": "the other item on the order is untouched",
+      "expected": [
+        6900
+      ],
+      "actual": [
+        6900
+      ],
+      "pass": true
+    },
+    {
+      "name": "turn reports the refund",
+      "expected": [
+        "refund:executed"
+      ],
+      "actual": [
+        "refund:executed"
+      ],
+      "pass": true
+    },
+    {
+      "name": "reply quotes the real amount",
+      "expected": "matches /69(\\.00)?/",
+      "actual": "Your refund for the Breezy Linen Shirt (M, White) has been processed. You’ll receive S$69.00 back to the Visa ending 4242, usually within 5-10 business days. A prepaid return label has been emailed-please send the shirt back within 14 days. Reference ACT-000001.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "turns": [
+      {
+        "who": {
+          "customerId": "C001"
+        },
+        "message": "hi, the linen shirt from ORD-1001 is too tight on me. can i get my money back for it?",
+        "result": {
+          "traceId": "trace-0001",
+          "conversationId": "cust:C001#default",
+          "reply": "Your refund for the Breezy Linen Shirt (M, White) has been processed. You’ll receive S$69.00 back to the Visa ending 4242, usually within 5-10 business days. A prepaid return label has been emailed-please send the shirt back within 14 days. Reference ACT-000001.",
+          "actions": [
+            {
+              "type": "refund",
+              "id": "ACT-000001",
+              "status": "executed",
+              "orderId": "ORD-1001",
+              "lineId": "ORD-1001-1",
+              "amountCents": 6900,
+              "amount": "S$69.00",
+              "priority": null,
+              "category": null,
+              "reference": "RFND-000001",
+              "detail": "Refund of S$69.00 for 1 unit(s) of ORD-1001-1 to Visa ending 4242"
+            }
+          ],
+          "duplicatesRecognised": [],
+          "notices": []
+        }
+      }
+    ],
+    "modelCalls": [
+      {
+        "ms": 754,
+        "toolResultsShown": [],
+        "content": null,
+        "toolCalls": [
+          {
+            "name": "get_order",
+            "arguments": "{\"order_id\":\"ORD-1001\"}"
+          }
+        ],
+        "usage": {
+          "inputTokens": 1769,
+          "outputTokens": 43
+        }
+      },
+      {
+        "ms": 472,
+        "toolResultsShown": [
+          "{\"order_id\":\"ORD-1001\",\"status\":\"delivered\",\"placed\":\"10 Nov 2026\",\"shipped\":\"11 Nov 2026\",\"delivered\":\"13 Nov 2026\",\"total_paid\":\"S$98.90\",\"shipping_paid\":\"free\",\"paid_with\":\"Visa ending 4242\",\"items\":[{\"line_id\":\"ORD-1001-1\",\"name\":\"Breezy Linen Shirt\",\"size\":\"M\",\"colour\":\"White\",\"qty\":1,\"paid_each\":\"S$69.00\",\"bought_on_sale\":false,\"options\":{\"refund\":\"available now\",\"refund_if_faulty\":\"available now\",\"exchange\":\"available now\"}},{\"line_id\":\"ORD-1001-2\",\"name\":\"Everyday Cotton Tee\",\"size\":\"M\",\"colour\":\"Black\",\"qty\":1,\"paid_each\":\"S$29.90\",\"bought_on_sale\":false,\"options\":{\"refund\":\"available now\",\"refund_if_faulty\":\"available now\",\"exchange\":\"available now\"}}],\"cancel_order\":\"not available: ALREADY_DELIVERED\"}"
+        ],
+        "content": null,
+        "toolCalls": [
+          {
+            "name": "request_refund",
+            "arguments": "{\"customer_quote\":\"too tight\",\"line_id\":\"ORD-1001-1\",\"order_id\":\"ORD-1001\",\"reason\":\"wrong_size_or_fit\"}"
+          }
+        ],
+        "usage": {
+          "inputTokens": 2008,
+          "outputTokens": 72
+        }
+      },
+      {
+        "ms": 707,
+        "toolResultsShown": [
+          "{\"order_id\":\"ORD-1001\",\"status\":\"delivered\",\"placed\":\"10 Nov 2026\",\"shipped\":\"11 Nov 2026\",\"delivered\":\"13 Nov 2026\",\"total_paid\":\"S$98.90\",\"shipping_paid\":\"free\",\"paid_with\":\"Visa ending 4242\",\"items\":[{\"line_id\":\"ORD-1001-1\",\"name\":\"Breezy Linen Shirt\",\"size\":\"M\",\"colour\":\"White\",\"qty\":1,\"paid_each\":\"S$69.00\",\"bought_on_sale\":false,\"options\":{\"refund\":\"available now\",\"refund_if_faulty\":\"available now\",\"exchange\":\"available now\"}},{\"line_id\":\"ORD-1001-2\",\"name\":\"Everyday Cotton Tee\",\"size\":\"M\",\"colour\":\"Black\",\"qty\":1,\"paid_each\":\"S$29.90\",\"bought_on_sale\":false,\"options\":{\"refund\":\"available now\",\"refund_if_faulty\":\"available now\",\"exchange\":\"available now\"}}],\"cancel_order\":\"not available: ALREADY_DELIVERED\"}",
+          "{\"outcome\":\"EXECUTED\",\"action\":\"refund\",\"reference\":\"ACT-000001\",\"order_id\":\"ORD-1001\",\"item\":\"Breezy Linen Shirt (M, White) x 1\",\"amount\":\"S$69.00\",\"refunded_to\":\"Visa ending 4242\",\"say\":\"Refund of S$69.00 to the original payment method (Visa ending 4242). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days. Reference ACT-000001.\"}"
+        ],
+        "content": "Your refund for the Breezy Linen Shirt (M, White) has been processed. You’ll receive S$69.00 back to the Visa ending 4242, usually within 5‑10 business days. A prepaid return label has been emailed—please send the shirt back within 14 days. Reference ACT-000001.",
+        "toolCalls": [],
+        "usage": {
+          "inputTokens": 2181,
+          "outputTokens": 74
+        }
+      }
+    ],
+    "db": {
+      "actions": [
+        {
+          "id": "ACT-000001",
+          "type": "refund",
+          "status": "executed",
+          "customer_key": "cust:C001",
+          "order_id": "ORD-1001",
+          "line_id": "ORD-1001-1",
+          "qty": 1,
+          "amount_cents": 6900,
+          "reason": "wrong_size_or_fit",
+          "idempotency_key": "refund:ORD-1001-1:u0",
+          "codes": [
+            "ALL_CHECKS_PASSED"
+          ],
+          "origin": "agent",
+          "approved_by": null,
+          "escalation_id": null,
+          "external_ref": "RFND-000001",
+          "details": {
+            "customerQuote": "too tight",
+            "paymentMethod": "Visa ending 4242"
+          }
+        }
+      ],
+      "escalations": [],
+      "gatewayRefunds": [
+        {
+          "reference": "RFND-000001",
+          "idempotency_key": "refund:ORD-1001-1:u0",
+          "order_id": "ORD-1001",
+          "amount_cents": 6900
+        }
+      ],
+      "ledgerOrders": [
+        {
+          "order_id": "ORD-1001",
+          "paid_cents": 9890,
+          "refunded_cents": 6900
+        }
+      ],
+      "ledgerLines": [
+        {
+          "line_id": "ORD-1001-1",
+          "order_id": "ORD-1001",
+          "qty": 1,
+          "refunded_qty": 1,
+          "exchanged_qty": 0
+        }
+      ],
+      "notifications": [],
+      "riskEvents": [],
+      "cancelledOrders": [],
+      "audit": [
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 1,
+          "trace_id": "trace-0001",
+          "event": "message_in",
+          "data": {
+            "channel": "eval-live",
+            "identity": {
+              "key": "cust:C001",
+              "kind": "customer"
+            },
+            "injectionSignals": [],
+            "redactions": [],
+            "text": "hi, the linen shirt from ORD-1001 is too tight on me. can i get my money back for it?",
+            "truncated": false
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 2,
+          "trace_id": "trace-0001",
+          "event": "llm_call",
+          "data": {
+            "content": null,
+            "model": "openai/gpt-oss-120b",
+            "step": 1,
+            "toolCalls": [
+              {
+                "arguments": "{\"order_id\":\"ORD-1001\"}",
+                "name": "get_order"
+              }
+            ],
+            "usage": {
+              "inputTokens": 1769,
+              "outputTokens": 43
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 3,
+          "trace_id": "trace-0001",
+          "event": "tool_call",
+          "data": {
+            "args": {
+              "order_id": "ORD-1001"
+            },
+            "ignoredArgs": [],
+            "name": "get_order",
+            "result": {
+              "cancel_order": "not available: ALREADY_DELIVERED",
+              "delivered": "13 Nov 2026",
+              "items": [
+                {
+                  "bought_on_sale": false,
+                  "colour": "White",
+                  "line_id": "ORD-1001-1",
+                  "name": "Breezy Linen Shirt",
+                  "options": {
+                    "exchange": "available now",
+                    "refund": "available now",
+                    "refund_if_faulty": "available now"
+                  },
+                  "paid_each": "S$69.00",
+                  "qty": 1,
+                  "size": "M"
+                },
+                {
+                  "bought_on_sale": false,
+                  "colour": "Black",
+                  "line_id": "ORD-1001-2",
+                  "name": "Everyday Cotton Tee",
+                  "options": {
+                    "exchange": "available now",
+                    "refund": "available now",
+                    "refund_if_faulty": "available now"
+                  },
+                  "paid_each": "S$29.90",
+                  "qty": 1,
+                  "size": "M"
+                }
+              ],
+              "order_id": "ORD-1001",
+              "paid_with": "Visa ending 4242",
+              "placed": "10 Nov 2026",
+              "shipped": "11 Nov 2026",
+              "shipping_paid": "free",
+              "status": "delivered",
+              "total_paid": "S$98.90"
+            },
+            "step": 1
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 4,
+          "trace_id": "trace-0001",
+          "event": "llm_call",
+          "data": {
+            "content": null,
+            "model": "openai/gpt-oss-120b",
+            "step": 2,
+            "toolCalls": [
+              {
+                "arguments": "{\"customer_quote\":\"too tight\",\"line_id\":\"ORD-1001-1\",\"order_id\":\"ORD-1001\",\"reason\":\"wrong_size_or_fit\"}",
+                "name": "request_refund"
+              }
+            ],
+            "usage": {
+              "inputTokens": 2008,
+              "outputTokens": 72
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 5,
+          "trace_id": "trace-0001",
+          "event": "proposal_received",
+          "data": {
+            "proposal": {
+              "evidenceQuote": "too tight",
+              "lineId": "ORD-1001-1",
+              "orderId": "ORD-1001",
+              "reason": "wrong_size_or_fit",
+              "type": "refund"
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 6,
+          "trace_id": "trace-0001",
+          "event": "gate_decision",
+          "data": {
+            "amountCents": 6900,
+            "codes": [
+              "ALL_CHECKS_PASSED"
+            ],
+            "facts": {
+              "autoLimitCents": 20000,
+              "daysSinceDelivery": 5,
+              "deliveredOn": "13 Nov 2026",
+              "hygiene": false,
+              "inStatutoryWindow": true,
+              "inWindow": true,
+              "mode": "agent",
+              "policyVersion": "SG-2026.11",
+              "purchasedOnSale": false,
+              "riskTier": "low",
+              "unitPaidCents": 6900,
+              "windowClosesOn": "13 Dec 2026"
+            },
+            "idempotencyKey": "refund:ORD-1001-1:u0",
+            "outcome": "ALLOW",
+            "policyVersion": "SG-2026.11",
+            "proposal": {
+              "evidenceQuote": "too tight",
+              "lineId": "ORD-1001-1",
+              "orderId": "ORD-1001",
+              "reason": "wrong_size_or_fit",
+              "type": "refund"
+            },
+            "qty": 1,
+            "risk": {
+              "signals": [],
+              "tier": "low"
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 7,
+          "trace_id": "trace-0001",
+          "event": "action_intent",
+          "data": {
+            "actionId": "ACT-000001",
+            "amountCents": 6900,
+            "approvedBy": null,
+            "idempotencyKey": "refund:ORD-1001-1:u0",
+            "lineId": "ORD-1001-1",
+            "orderId": "ORD-1001",
+            "origin": "agent",
+            "qty": 1,
+            "type": "refund"
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 8,
+          "trace_id": "trace-0001",
+          "event": "action_executed",
+          "data": {
+            "actionId": "ACT-000001",
+            "amountCents": 6900,
+            "approvedBy": null,
+            "externalRef": "RFND-000001",
+            "lineId": "ORD-1001-1",
+            "orderId": "ORD-1001",
+            "origin": "agent",
+            "type": "refund"
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 9,
+          "trace_id": "trace-0001",
+          "event": "tool_call",
+          "data": {
+            "args": {
+              "customer_quote": "too tight",
+              "line_id": "ORD-1001-1",
+              "order_id": "ORD-1001",
+              "reason": "wrong_size_or_fit"
+            },
+            "ignoredArgs": [],
+            "name": "request_refund",
+            "result": {
+              "action": "refund",
+              "amount": "S$69.00",
+              "item": "Breezy Linen Shirt (M, White) x 1",
+              "order_id": "ORD-1001",
+              "outcome": "EXECUTED",
+              "reference": "ACT-000001",
+              "refunded_to": "Visa ending 4242",
+              "say": "Refund of S$69.00 to the original payment method (Visa ending 4242). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days. Reference ACT-000001."
+            },
+            "step": 2
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 10,
+          "trace_id": "trace-0001",
+          "event": "llm_call",
+          "data": {
+            "content": "Your refund for the Breezy Linen Shirt (M, White) has been processed. You’ll receive S$69.00 back to the Visa ending 4242, usually within 5‑10 business days. A prepaid return label has been emailed—please send the shirt back within 14 days. Reference ACT-000001.",
+            "model": "openai/gpt-oss-120b",
+            "step": 3,
+            "toolCalls": [],
+            "usage": {
+              "inputTokens": 2181,
+              "outputTokens": 74
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 11,
+          "trace_id": "trace-0001",
+          "event": "message_out",
+          "data": {
+            "actions": [
+              {
+                "amountCents": 6900,
+                "id": "ACT-000001",
+                "status": "executed",
+                "type": "refund"
+              }
+            ],
+            "duplicatesRecognised": [],
+            "notices": [],
+            "reply": "Your refund for the Breezy Linen Shirt (M, White) has been processed. You’ll receive S$69.00 back to the Visa ending 4242, usually within 5-10 business days. A prepaid return label has been emailed-please send the shirt back within 14 days. Reference ACT-000001."
+          }
+        }
+      ]
+    }
+  }
+}

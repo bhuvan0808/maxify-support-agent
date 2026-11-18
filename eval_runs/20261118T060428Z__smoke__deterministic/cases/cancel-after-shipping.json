@@ -1,0 +1,78 @@
+{
+  "id": "cancel-after-shipping",
+  "guards": "Cancelling (and refunding) an order already in transit",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "ALREADY_SHIPPED",
+      "actual": [
+        "ALREADY_SHIPPED",
+        "ALREADY_SHIPPED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "cancellation",
+          "orderId": "ORD-1006"
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "ALREADY_SHIPPED"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "ALREADY_SHIPPED",
+          "say": "Order ORD-1006 has already shipped, so it can't be cancelled. Once it arrives, a return or exchange can be arranged under the returns policy."
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 2
+    }
+  }
+}

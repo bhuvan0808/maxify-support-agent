@@ -1,0 +1,81 @@
+{
+  "id": "quantity-more-than-bought",
+  "guards": "Refunding more units than were bought",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "QUANTITY_NOT_AVAILABLE",
+      "actual": [
+        "QUANTITY_NOT_AVAILABLE",
+        "QUANTITY_NOT_AVAILABLE"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1007",
+          "lineId": "ORD-1007-1",
+          "reason": "changed_mind",
+          "qty": 3
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "QUANTITY_NOT_AVAILABLE"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "QUANTITY_NOT_AVAILABLE",
+          "say": "Only 2 of this item can still be returned."
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 2
+    }
+  }
+}

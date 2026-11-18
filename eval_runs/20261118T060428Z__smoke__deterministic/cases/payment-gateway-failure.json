@@ -1,0 +1,85 @@
+{
+  "id": "payment-gateway-failure",
+  "guards": "Refund reported as done when the gateway rejected it",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "FAILED",
+      "actual": "FAILED",
+      "pass": true
+    },
+    {
+      "name": "step 1 ticket queue",
+      "expected": "payment_failure",
+      "actual": "payment_failure",
+      "pass": true
+    },
+    {
+      "name": "step 1 ticket priority",
+      "expected": "P1",
+      "actual": "P1",
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1001",
+          "lineId": "ORD-1001-1",
+          "reason": "changed_mind"
+        },
+        "status": "FAILED",
+        "decisionCodes": [
+          "ALL_CHECKS_PASSED"
+        ],
+        "toldToModel": {
+          "outcome": "FAILED",
+          "code": "PAYMENT_NOT_SENT",
+          "reference": "ESC-000001",
+          "say": "The refund could not be sent just now, so no money has moved yet. It has been passed to the team as urgent (reference ESC-000001) and they will complete it.",
+          "note": "Do not say the refund has been issued."
+        },
+        "actionId": "ACT-000001",
+        "escalationId": "ESC-000001"
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 6
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "id": "model-never-stops",
+  "guards": "Runaway tool loop",
+  "pass": true,
+  "checks": [
+    {
+      "name": "new actions this turn",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    },
+    {
+      "name": "notice contains \"model_failure\"",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "reply must not match /refunded|cancelled/i",
+      "expected": false,
+      "actual": false,
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "turn": {
+      "traceId": "trace-1",
+      "conversationId": "cust:C001#default",
+      "reply": "I'm sorry, I ran into a problem and couldn't complete that. Nothing has been changed on your orders. I've asked a team member to pick this up (reference ESC-000001); they will reply within one to two working days.",
+      "actions": [
+        {
+          "type": "escalation",
+          "id": "ESC-000001",
+          "status": "open",
+          "orderId": null,
+          "lineId": null,
+          "amountCents": null,
+          "amount": null,
+          "priority": "P3",
+          "category": "agent_failure",
+          "reference": null,
+          "detail": "Handed over to a human"
+        }
+      ],
+      "duplicatesRecognised": [],
+      "notices": [
+        "model_failure"
+      ]
+    },
+    "modelCalls": 6,
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 12
+    }
+  }
+}

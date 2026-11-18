@@ -1,0 +1,157 @@
+{
+  "id": "live-ambiguous-return-request-clarifies",
+  "guards": "The agent guesses which order or item to refund when the customer has not said",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 12989,
+  "criteria": [
+    {
+      "name": "no action taken on a guess",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "no ticket raised",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "reply asks which order or item",
+      "expected": "matches /\\?/",
+      "actual": "Sure! Could you let me know which order you’d like to return, or would you like me to list your recent orders for you?",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "turns": [
+      {
+        "who": {
+          "customerId": "C001"
+        },
+        "message": "I want to send something back and get a refund.",
+        "result": {
+          "traceId": "trace-0001",
+          "conversationId": "cust:C001#default",
+          "reply": "Sure! Could you let me know which order you’d like to return, or would you like me to list your recent orders for you?",
+          "actions": [],
+          "duplicatesRecognised": [],
+          "notices": []
+        }
+      }
+    ],
+    "modelCalls": [
+      {
+        "ms": 12979,
+        "toolResultsShown": [],
+        "content": "Sure! Could you let me know which order you’d like to return, or would you like me to list your recent orders for you?",
+        "toolCalls": [],
+        "usage": {
+          "inputTokens": 1755,
+          "outputTokens": 50
+        }
+      }
+    ],
+    "db": {
+      "actions": [],
+      "escalations": [],
+      "gatewayRefunds": [],
+      "ledgerOrders": [],
+      "ledgerLines": [],
+      "notifications": [],
+      "riskEvents": [],
+      "cancelledOrders": [],
+      "audit": [
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 1,
+          "trace_id": "trace-0001",
+          "event": "message_in",
+          "data": {
+            "channel": "eval-live",
+            "identity": {
+              "key": "cust:C001",
+              "kind": "customer"
+            },
+            "injectionSignals": [],
+            "redactions": [],
+            "text": "I want to send something back and get a refund.",
+            "truncated": false
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 2,
+          "trace_id": "trace-0001",
+          "event": "llm_call",
+          "data": {
+            "content": "Sure! Could you let me know which order you’d like to return, or would you like me to list your recent orders for you?",
+            "model": "openai/gpt-oss-120b",
+            "step": 1,
+            "toolCalls": [],
+            "usage": {
+              "inputTokens": 1755,
+              "outputTokens": 50
+            }
+          }
+        },
+        {
+          "chain_id": "cust:C001#default",
+          "seq": 3,
+          "trace_id": "trace-0001",
+          "event": "message_out",
+          "data": {
+            "actions": [],
+            "duplicatesRecognised": [],
+            "notices": [],
+            "reply": "Sure! Could you let me know which order you’d like to return, or would you like me to list your recent orders for you?"
+          }
+        }
+      ]
+    }
+  }
+}

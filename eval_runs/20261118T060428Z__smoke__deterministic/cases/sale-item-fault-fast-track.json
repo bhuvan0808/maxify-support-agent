@@ -1,0 +1,127 @@
+{
+  "id": "sale-item-fault-fast-track",
+  "guards": "Low-value faulty sale item for a clean customer is refunded",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "EXECUTED",
+      "actual": "EXECUTED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "DEFECT_FAST_TRACK",
+      "actual": [
+        "DEFECT_FAST_TRACK",
+        "ALL_CHECKS_PASSED",
+        ""
+      ],
+      "pass": true
+    },
+    {
+      "name": "step 1 amount (cents)",
+      "expected": 2730,
+      "actual": 2730,
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1005",
+          "lineId": "ORD-1005-2",
+          "reason": "defective_or_damaged",
+          "evidenceQuote": "the stitching on the cap is coming apart"
+        },
+        "status": "EXECUTED",
+        "decisionCodes": [
+          "DEFECT_FAST_TRACK",
+          "ALL_CHECKS_PASSED"
+        ],
+        "toldToModel": {
+          "outcome": "EXECUTED",
+          "action": "refund",
+          "reference": "ACT-000001",
+          "order_id": "ORD-1005",
+          "item": "Batik Print Cap (One Size, Indigo) x 1",
+          "amount": "S$27.30",
+          "refunded_to": "Mastercard ending 5599",
+          "say": "Refund of S$27.30 to the original payment method (Mastercard ending 5599). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days. Reference ACT-000001."
+        },
+        "actionId": "ACT-000001",
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [
+        {
+          "order_id": "ORD-1011",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        },
+        {
+          "order_id": "ORD-1012",
+          "paid_cents": 7400,
+          "refunded_cents": 6900
+        },
+        {
+          "order_id": "ORD-1013",
+          "paid_cents": 9900,
+          "refunded_cents": 9900
+        },
+        {
+          "order_id": "ORD-1014",
+          "paid_cents": 11900,
+          "refunded_cents": 11900
+        },
+        {
+          "order_id": "ORD-1018",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        }
+      ],
+      "executed": [
+        {
+          "id": "ACT-000001",
+          "idempotency_key": "refund:ORD-1005-2:u0",
+          "amount_cents": 2730,
+          "origin": "agent"
+        }
+      ],
+      "auditEvents": 4
+    }
+  }
+}

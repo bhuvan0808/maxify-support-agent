@@ -1,0 +1,35 @@
+{
+  "suite": "gate",
+  "model": "no-model",
+  "startedAt": "2026-11-18T06:03:45.416Z",
+  "finishedAt": "2026-11-18T06:03:45.534Z",
+  "durationMs": 93,
+  "fixedClock": "2026-11-18T04:00:00.000Z",
+  "node": "v24.16.0",
+  "result": "PASS",
+  "totals": {
+    "cases": 2,
+    "passed": 2,
+    "failed": 0,
+    "errored": 0
+  },
+  "loadError": null,
+  "cases": [
+    {
+      "id": "gate-window-day-30-allowed",
+      "guards": "Off-by-one: the last day of the window is wrongly refused",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 75
+    },
+    {
+      "id": "gate-window-day-31-denied",
+      "guards": "Off-by-one: a return one day late is refunded",
+      "status": "PASS",
+      "failedCriteria": [],
+      "error": null,
+      "durationMs": 12
+    }
+  ]
+}

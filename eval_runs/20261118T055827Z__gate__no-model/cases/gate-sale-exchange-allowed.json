@@ -1,0 +1,165 @@
+{
+  "id": "gate-sale-exchange-allowed",
+  "guards": "A sale item cannot even be exchanged",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 19,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "ALLOW",
+      "actual": "ALLOW",
+      "pass": true
+    },
+    {
+      "name": "amount (cents), computed from the order",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "idempotency key",
+      "expected": "exchange:ORD-1005-1:u0",
+      "actual": "exchange:ORD-1005-1:u0",
+      "pass": true
+    },
+    {
+      "name": "fact newSize",
+      "expected": "M",
+      "actual": "M",
+      "pass": true
+    },
+    {
+      "name": "fact newColour",
+      "expected": "Navy",
+      "actual": "Navy",
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Exchange confirmed for Monsoon Rain Jacket in M Navy. The replacement ships once the original is posted back with the prepaid label we have emailed.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C002"
+    },
+    "identity": {
+      "key": "cust:C002",
+      "kind": "customer",
+      "customerId": "C002",
+      "email": "weijie.tan@example.com",
+      "name": "Wei Jie Tan"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "exchange",
+      "orderId": "ORD-1005",
+      "lineId": "ORD-1005-1",
+      "reason": "wrong_size_or_fit",
+      "newSize": "M"
+    },
+    "decision": {
+      "outcome": "ALLOW",
+      "codes": [
+        "ALL_CHECKS_PASSED"
+      ],
+      "publicCode": "APPROVED",
+      "say": "Exchange confirmed for Monsoon Rain Jacket in M Navy. The replacement ships once the original is posted back with the prepaid label we have emailed.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 0,
+      "qty": 1,
+      "lineId": "ORD-1005-1",
+      "idempotencyKey": "exchange:ORD-1005-1:u0",
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "wrong_size_or_fit",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 8,
+        "deliveredOn": "10 Nov 2026",
+        "windowClosesOn": "10 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": true,
+        "hygiene": false,
+        "newSize": "M",
+        "newColour": "Navy"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 2,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

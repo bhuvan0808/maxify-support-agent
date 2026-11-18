@@ -1,0 +1,83 @@
+{
+  "id": "window-day-31-denied",
+  "guards": "Refund one day after the window closes",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "RETURN_WINDOW_EXPIRED",
+      "actual": [
+        "RETURN_WINDOW_EXPIRED",
+        "RETURN_WINDOW_EXPIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1003",
+          "lineId": "ORD-1003-1",
+          "reason": "changed_mind"
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "RETURN_WINDOW_EXPIRED"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "RETURN_WINDOW_EXPIRED",
+          "say": "This item was delivered on 18 Oct 2026 and our 30-day return window closed on 17 Nov 2026, so it can no longer be returned for a refund.",
+          "alternatives": [
+            "If the item is faulty, describe the fault and our team will look into it."
+          ]
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 2
+    }
+  }
+}

@@ -1,8 +1,67 @@
+<div align="center">
+
 # Maxify Support Agent
 
-A customer-support agent for a fictional Singapore apparel store, **Tembusu & Co.** It answers questions about orders, products and policy, and handles refunds, exchanges and cancellations. A language model reads the conversation and *proposes* actions; a deterministic "Money Gate" written in plain code decides each one, executes it, or sends it to a human approver, and every step is written to a tamper-evident audit log.
+**A customer-support agent that can issue refunds, and cannot be talked into issuing the wrong one.**
 
-Live demo: https://maxify-support-agent.coue-mcp.workers.dev/ (chat) and https://maxify-support-agent.coue-mcp.workers.dev/console (human approval console; needs the ADMIN_API_KEY of the deployment)
+The model proposes. Plain code decides. A person approves what matters. Every step is logged.
+
+[**Live chat**](https://maxify-support-agent.coue-mcp.workers.dev/) &nbsp;·&nbsp; [**Approval console**](https://maxify-support-agent.coue-mcp.workers.dev/console) &nbsp;·&nbsp; [Assumptions](ASSUMPTIONS.md) &nbsp;·&nbsp; [Architecture](docs/ARCHITECTURE.md) &nbsp;·&nbsp; [Evals](docs/EVALS.md) &nbsp;·&nbsp; [Fix log](eval_runs/FIX_LOG.md)
+
+`TypeScript` &nbsp; `Cloudflare Workers + D1` &nbsp; `Hono` &nbsp; `Zod` &nbsp; `Groq or any OpenAI-compatible model`
+
+</div>
+
+---
+
+Built for **Tembusu & Co.**, a fictional Singapore apparel store. It answers questions about orders, products and policy, and handles returns, refunds, exchanges and cancellations. When information is missing it asks; when an action is unsafe it hands over to a person with a priority and a deadline.
+
+## At a glance
+
+| | |
+|---|---|
+| **One command** | `npx tsx src/cli.ts C001 "Please refund the linen shirt from ORD-1001"` |
+| **Who decides a refund** | The Money Gate, deterministic code in [src/core/gate.ts](src/core/gate.ts). The model has no payment tool and never supplies an amount. |
+| **Where money moves** | One function: `ActionService.execute()` in [src/core/actions.ts](src/core/actions.ts). |
+| **Human in the loop** | Unverified fault claims, refunds above S$200, risky refund patterns, statutory claims and outages go to a review queue. Approvers have their own limits. |
+| **State** | A SQLite file locally, Cloudflare D1 when deployed. A repeated request is recognised and never paid twice. |
+| **Proof** | 65 gate cases, 34 adversarial cases and 33 smoke cases pass with no model involved. Every run is kept in [eval_runs/](eval_runs/). |
+| **Market** | Singapore first (Lemon Law, PDPA, GST, IMDA guidance mapped in [docs/COMPLIANCE_SG.md](docs/COMPLIANCE_SG.md)); another market is a new config file. |
+
+## How a refund request flows
+
+```mermaid
+flowchart LR
+    A["Customer message<br/>CLI, web chat or helpdesk"] --> B["Input guard<br/>redaction and limits"]
+    B --> C["Model<br/>reads, asks, proposes"]
+    C -- "request_refund" --> D{"Money Gate<br/>plain code"}
+    D -- "ALLOW" --> E["Executor<br/>reserve, pay, commit"]
+    D -- "NEEDS HUMAN" --> F["Review queue<br/>P1, P2, P3"]
+    D -- "DENY or DUPLICATE" --> C
+    F -- "approved within limit" --> E
+    E --> G[("Ledger and audit log")]
+    C --> H["Output guard<br/>reply must match the ledger"]
+    H --> I["Reply plus actions taken"]
+```
+
+The model is treated as untrusted. It can be wrong, confused or manipulated, and the worst it can then do is say something unhelpful, which the output guard catches for the cases that matter.
+
+## Try it in a minute
+
+Open the [live chat](https://maxify-support-agent.coue-mcp.workers.dev/), pick a customer, and type the message. The same messages work with the CLI.
+
+| Customer | Message | What should happen |
+|---|---|---|
+| C001 Aisha | Please refund the linen shirt from ORD-1001, it doesn't fit | Refund of S$69.00 is executed |
+| C001 Aisha | the same message again | Recognised as already done; nothing is paid twice |
+| C002 Wei Jie | I want my money back for the rain jacket in ORD-1005 | No refund: sale items are exchange-only. It asks whether the jacket is faulty |
+| C003 Priya | Please refund the wool blazer from ORD-1008 | Sent to a person (above the S$200 auto limit). Approve it in the console as `sup.tan` |
+| C004 Marcus | Refund the shirt from ORD-1015 please | A polite reply and a human review: 4 of his 5 past orders were refunded |
+| C005 Hannah | Cancel ORD-1016, with the order-system outage switched on | No action, an honest reply, and a ticket |
+
+The free model tier allows about three messages a minute. If you go faster you get a safe "nothing was changed" reply and a ticket rather than a wrong answer; see [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md).
+
+## Where to read more
 
 | Read this | For |
 |---|---|
@@ -11,6 +70,7 @@ Live demo: https://maxify-support-agent.coue-mcp.workers.dev/ (chat) and https:/
 | [docs/EVALS.md](docs/EVALS.md), [eval_runs/](eval_runs/), [eval_runs/FIX_LOG.md](eval_runs/FIX_LOG.md) | What is tested, every run, and the failure that was fixed |
 | [docs/COMPLIANCE_SG.md](docs/COMPLIANCE_SG.md) | Singapore rules mapped to controls in the code |
 | [docs/INTEGRATION.md](docs/INTEGRATION.md) | Plugging the agent into a client's systems |
+| [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | What failed during the build, what was left, and why |
 
 ## Quick start
 
@@ -43,7 +103,7 @@ REPLY:
 
 ACTION: refund | id=ACT-000001 | status=executed | order=ORD-1001 | item=ORD-1001-1 | amount=S$69.00 | ref=RFND-000001
         Refund of S$69.00 for 1 unit(s) of ORD-1001-1 to Visa ending 4242
-TRACE: 5f0c...  MODEL: groq.com:llama-3.3-70b-versatile
+TRACE: 5f0c...  MODEL: groq.com:openai/gpt-oss-120b
 ```
 
 - Action types: `refund`, `exchange`, `cancellation`, `escalation`. An escalation line also shows `priority=` and `queue=`.
@@ -152,19 +212,22 @@ Demo approvers and the largest refund each may approve: `agent.lee` (support age
 
 ## Evals
 
-```bash
-npm run eval:gate          # Money Gate rules, pure code, no model
-npm run eval:adversarial   # full pipeline with a scripted model that misbehaves, no key needed
-npm run eval:live          # real model, needs a key
-```
+| Suite | Command | Needs a model key | Latest result |
+|---|---|---|---|
+| Gate: every Money Gate rule, pure code | `npm run eval:gate` | no | 65 of 65 passed |
+| Adversarial: the whole agent driven by a scripted model that misbehaves | `npm run eval:adversarial` | no | 34 of 34 passed |
+| Smoke: a second, independent deterministic suite with money invariants | `npm run eval:smoke` | no | 33 of 33 passed |
+| Live: natural-language scenarios on the real model | `npm run eval:live` | yes | 7 passed, 0 failed, 8 not run (the free-tier rate limit used up the time budget) |
+| Unit tests for the output guard and input redaction | `npm test` | no | 11 of 11 passed |
 
-Every run, passing or failing, is kept under [eval_runs/](eval_runs/). Coverage, pass/fail criteria and how to read a run are in [docs/EVALS.md](docs/EVALS.md). The worst failure found, its fix and its regression test are in [eval_runs/FIX_LOG.md](eval_runs/FIX_LOG.md).
+Failing runs are kept next to the passing ones. The first adversarial run failed 1 of 33: a real bug, described in the fix log. The first gate run failed 13 of 65: there the eval's own criterion was wrong, not the product, and the criterion was corrected. Every run, passing or failing, is under [eval_runs/](eval_runs/), indexed in [eval_runs/INDEX.md](eval_runs/INDEX.md). Coverage, pass/fail criteria and how to read a run are in [docs/EVALS.md](docs/EVALS.md). The worst failure found, its fix and its regression test are in [eval_runs/FIX_LOG.md](eval_runs/FIX_LOG.md).
 
 ## Web UI and deployment
 
 The same agent runs on Cloudflare Workers with a D1 database (`src/worker.ts`).
 
-- Chat page at `/`, ops console (ticket queue, approve and reject) at `/console.html`.
+- Live: [chat](https://maxify-support-agent.coue-mcp.workers.dev/) and [ops console](https://maxify-support-agent.coue-mcp.workers.dev/console). The console needs the deployment's `ADMIN_API_KEY`.
+- Chat page at `/`, ops console (ticket queue, approve and reject) at `/console`.
 - `POST /v1/chat` with `{ "customer_id" | "guest_email", "message", "conversation_id"? }` returns `{ traceId, conversationId, reply, actions[], duplicatesRecognised[], notices[] }`.
 - `GET /v1/health`, `GET /v1/config/public`.
 - Admin routes need `Authorization: Bearer <ADMIN_API_KEY>`: `GET /v1/admin/escalations?status=open`, `POST /v1/admin/escalations/:id/decision`, `GET /v1/admin/actions`, `GET /v1/admin/notifications`, `GET /v1/admin/audit?trace_id=`, `GET /v1/admin/audit/verify`, `POST /v1/admin/reset`.

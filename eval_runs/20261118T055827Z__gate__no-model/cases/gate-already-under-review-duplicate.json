@@ -1,0 +1,151 @@
+{
+  "id": "gate-already-under-review-duplicate",
+  "guards": "Asking again opens a second review ticket for the same refund",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 64,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DUPLICATE",
+      "actual": "DUPLICATE",
+      "pass": true
+    },
+    {
+      "name": "reason code ALREADY_UNDER_REVIEW",
+      "expected": "contains \"ALREADY_UNDER_REVIEW\"",
+      "actual": [
+        "ALREADY_UNDER_REVIEW"
+      ],
+      "pass": true
+    },
+    {
+      "name": "points at the existing ticket",
+      "expected": "ESC-000001",
+      "actual": "ESC-000001",
+      "pass": true
+    },
+    {
+      "name": "refused decisions carry no idempotency key",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "A refund request for this item is already with our team (reference ESC-000001). There is no need to ask again; they will be in touch.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C003"
+    },
+    "identity": {
+      "key": "cust:C003",
+      "kind": "customer",
+      "customerId": "C003",
+      "email": "priya.nair@example.com",
+      "name": "Priya Nair"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1008",
+      "lineId": "ORD-1008-1",
+      "reason": "changed_mind"
+    },
+    "decision": {
+      "outcome": "DUPLICATE",
+      "codes": [
+        "ALREADY_UNDER_REVIEW"
+      ],
+      "publicCode": "ALREADY_UNDER_REVIEW",
+      "say": "A refund request for this item is already with our team (reference ESC-000001). There is no need to ask again; they will be in touch.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-1008-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": "ESC-000001",
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}
