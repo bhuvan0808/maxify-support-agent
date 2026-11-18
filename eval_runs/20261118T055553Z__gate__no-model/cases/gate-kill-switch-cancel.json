@@ -1,0 +1,146 @@
+{
+  "id": "gate-kill-switch-cancel",
+  "guards": "Cancellations keep flowing after automation is switched off",
+  "status": "FAIL",
+  "failedCriteria": [
+    "no idempotency key unless allowed (nothing can execute)"
+  ],
+  "error": null,
+  "durationMs": 11,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "NEEDS_HUMAN",
+      "actual": "NEEDS_HUMAN",
+      "pass": true
+    },
+    {
+      "name": "reason code AUTOMATION_PAUSED",
+      "expected": "contains \"AUTOMATION_PAUSED\"",
+      "actual": [
+        "AUTOMATION_PAUSED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "no idempotency key unless allowed (nothing can execute)",
+      "expected": null,
+      "actual": "cancellation:ORD-1004",
+      "pass": false
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "This request needs a review by our team before it can go ahead.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C001"
+    },
+    "identity": {
+      "key": "cust:C001",
+      "kind": "customer",
+      "customerId": "C001",
+      "email": "aisha.rahman@example.com",
+      "name": "Aisha Rahman"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "cancellation",
+      "orderId": "ORD-1004"
+    },
+    "decision": {
+      "outcome": "NEEDS_HUMAN",
+      "codes": [
+        "AUTOMATION_PAUSED"
+      ],
+      "publicCode": "REVIEW_REQUIRED",
+      "say": "This request needs a review by our team before it can go ahead.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 13900,
+      "qty": 0,
+      "lineId": null,
+      "idempotencyKey": "cancellation:ORD-1004",
+      "priority": "P2",
+      "escalationCategory": "automation_paused",
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": null,
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "orderStatus": "processing"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

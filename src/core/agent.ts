@@ -19,7 +19,7 @@ import type { TenantConfig } from "../config/tenant.ts";
 import type { Clock, CommercePort, LlmMessage, LlmPort, SqlDriver } from "../ports/index.ts";
 import { loadCustomerHistory } from "../store/ledger.ts";
 import type { ActionService, TurnState } from "./actions.ts";
-import { escalationToTurnAction } from "./actions.ts";
+import { actionToTurnAction, escalationToTurnAction } from "./actions.ts";
 import { AuditLog } from "./audit.ts";
 import type { EscalationService } from "./escalations.ts";
 import { checkInput, checkOutput } from "./guards.ts";
@@ -267,6 +267,18 @@ export class SupportAgent {
         // The fallback is built only from gate text, so this should not happen. Stay safe if it does.
         audit.record("guard_violation", { violations: verdict.violations, stage: "fallback" });
         reply = GENERIC_SAFE_REPLY;
+      }
+    }
+
+    // A repeat is often recognised from the customer's history without calling a tool again.
+    // If nothing new was done and the reply cites an earlier action or ticket of this
+    // customer, report it as recognised so the channel can show "already handled".
+    if (reply && turn.actions.length === 0 && turn.duplicates.length === 0) {
+      for (const m of reply.matchAll(/(?:ACT|ESC)-d{6}/g)) {
+        const action = customerHistory.actions.find((a) => a.id === m[0]);
+        const ticket = customerHistory.escalations.find((e) => e.id === m[0]);
+        if (action && !turn.duplicates.some((d) => d.id === action.id)) turn.duplicates.push(actionToTurnAction(action, cfg));
+        if (ticket && !turn.duplicates.some((d) => d.id === ticket.id)) turn.duplicates.push(escalationToTurnAction(ticket, cfg));
       }
     }
 

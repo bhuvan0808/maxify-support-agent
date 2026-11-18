@@ -1,0 +1,153 @@
+{
+  "id": "partial-quantity-then-repeat",
+  "guards": "Repeat of a one-unit refund silently refunds the second unit",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "EXECUTED",
+      "actual": "EXECUTED",
+      "pass": true
+    },
+    {
+      "name": "step 1 amount (cents)",
+      "expected": 2990,
+      "actual": 2990,
+      "pass": true
+    },
+    {
+      "name": "step 2 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 2 reason code",
+      "expected": "CONFIRM_ADDITIONAL_UNITS",
+      "actual": [
+        "CONFIRM_ADDITIONAL_UNITS",
+        "CONFIRM_ADDITIONAL_UNITS"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1007",
+          "lineId": "ORD-1007-1",
+          "reason": "changed_mind",
+          "qty": 1
+        },
+        "status": "EXECUTED",
+        "decisionCodes": [
+          "ALL_CHECKS_PASSED"
+        ],
+        "toldToModel": {
+          "outcome": "EXECUTED",
+          "action": "refund",
+          "reference": "ACT-000001",
+          "order_id": "ORD-1007",
+          "item": "Everyday Cotton Tee (L, White) x 1",
+          "amount": "S$29.90",
+          "refunded_to": "Mastercard ending 5599",
+          "say": "Refund of S$29.90 to the original payment method (Mastercard ending 5599). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days. Reference ACT-000001."
+        },
+        "actionId": "ACT-000001",
+        "escalationId": null
+      },
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1007",
+          "lineId": "ORD-1007-1",
+          "reason": "changed_mind",
+          "qty": 1
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "CONFIRM_ADDITIONAL_UNITS"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "CONFIRM_ADDITIONAL_UNITS",
+          "say": "1 of the 2 units of this item already has a refund on record (reference ACT-000001).",
+          "hint": "If the customer is just repeating their earlier request, tell them it was already done. Only if they clearly want to return a further unit, call again with additional_to_action_id=\"ACT-000001\".",
+          "existing_reference": "ACT-000001"
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [
+        {
+          "order_id": "ORD-1011",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        },
+        {
+          "order_id": "ORD-1012",
+          "paid_cents": 7400,
+          "refunded_cents": 6900
+        },
+        {
+          "order_id": "ORD-1013",
+          "paid_cents": 9900,
+          "refunded_cents": 9900
+        },
+        {
+          "order_id": "ORD-1014",
+          "paid_cents": 11900,
+          "refunded_cents": 11900
+        },
+        {
+          "order_id": "ORD-1018",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        }
+      ],
+      "executed": [
+        {
+          "id": "ACT-000001",
+          "idempotency_key": "refund:ORD-1007-1:u0",
+          "amount_cents": 2990,
+          "origin": "agent"
+        }
+      ],
+      "auditEvents": 6
+    }
+  }
+}

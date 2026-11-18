@@ -1,0 +1,111 @@
+{
+  "id": "refund-after-exchange",
+  "guards": "Item exchanged and then also refunded",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "EXECUTED",
+      "actual": "EXECUTED",
+      "pass": true
+    },
+    {
+      "name": "step 2 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 2 reason code",
+      "expected": "ALREADY_EXCHANGED",
+      "actual": [
+        "ALREADY_EXCHANGED",
+        "ALREADY_EXCHANGED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "exchange",
+          "orderId": "ORD-1022",
+          "lineId": "ORD-1022-1",
+          "reason": "wrong_size_or_fit",
+          "newSize": "32"
+        },
+        "status": "EXECUTED",
+        "decisionCodes": [
+          "ALL_CHECKS_PASSED"
+        ],
+        "toldToModel": {
+          "outcome": "EXECUTED",
+          "action": "exchange",
+          "reference": "ACT-000001",
+          "order_id": "ORD-1022",
+          "item": "Tailored Chino Trousers (34, Khaki) x 1",
+          "say": "Exchange confirmed for Tailored Chino Trousers in 32 Khaki. The replacement ships once the original is posted back with the prepaid label we have emailed. Reference ACT-000001."
+        },
+        "actionId": "ACT-000001",
+        "escalationId": null
+      },
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1022",
+          "lineId": "ORD-1022-1",
+          "reason": "defective_or_damaged",
+          "evidenceQuote": "the chinos have a broken zip"
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "ALREADY_EXCHANGED"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "ALREADY_EXCHANGED",
+          "say": "This item has already been exchanged (reference ACT-000001), so it can't also be refunded.",
+          "existing_reference": "ACT-000001"
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 6
+    }
+  }
+}

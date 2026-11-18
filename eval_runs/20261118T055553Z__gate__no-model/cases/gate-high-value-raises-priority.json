@@ -1,0 +1,162 @@
+{
+  "id": "gate-high-value-raises-priority",
+  "guards": "A very large refund waits in the normal queue",
+  "status": "FAIL",
+  "failedCriteria": [
+    "no idempotency key unless allowed (nothing can execute)"
+  ],
+  "error": null,
+  "durationMs": 12,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "NEEDS_HUMAN",
+      "actual": "NEEDS_HUMAN",
+      "pass": true
+    },
+    {
+      "name": "reason code AMOUNT_OVER_AUTO_LIMIT",
+      "expected": "contains \"AMOUNT_OVER_AUTO_LIMIT\"",
+      "actual": [
+        "AMOUNT_OVER_AUTO_LIMIT"
+      ],
+      "pass": true
+    },
+    {
+      "name": "priority",
+      "expected": "P1",
+      "actual": "P1",
+      "pass": true
+    },
+    {
+      "name": "no idempotency key unless allowed (nothing can execute)",
+      "expected": null,
+      "actual": "refund:ORD-1008-1:u0",
+      "pass": false
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "This request needs a review by our team before it can go ahead.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C003"
+    },
+    "identity": {
+      "key": "cust:C003",
+      "kind": "customer",
+      "customerId": "C003",
+      "email": "priya.nair@example.com",
+      "name": "Priya Nair"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1008",
+      "lineId": "ORD-1008-1",
+      "reason": "changed_mind"
+    },
+    "decision": {
+      "outcome": "NEEDS_HUMAN",
+      "codes": [
+        "AMOUNT_OVER_AUTO_LIMIT"
+      ],
+      "publicCode": "REVIEW_REQUIRED",
+      "say": "This request needs a review by our team before it can go ahead.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 32900,
+      "qty": 1,
+      "lineId": "ORD-1008-1",
+      "idempotencyKey": "refund:ORD-1008-1:u0",
+      "priority": "P1",
+      "escalationCategory": "refund_review",
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 10,
+        "deliveredOn": "8 Nov 2026",
+        "windowClosesOn": "8 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": false,
+        "hygiene": false,
+        "unitPaidCents": 32900,
+        "autoLimitCents": 20000
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

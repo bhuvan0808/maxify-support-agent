@@ -1,0 +1,165 @@
+{
+  "id": "gate-ungrounded-fault-on-full-price-downgraded",
+  "guards": "An invented fault pollutes the customer's defect history, or blocks a refund that is due anyway",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 10,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "ALLOW",
+      "actual": "ALLOW",
+      "pass": true
+    },
+    {
+      "name": "reason code FAULT_REASON_NOT_GROUNDED",
+      "expected": "contains \"FAULT_REASON_NOT_GROUNDED\"",
+      "actual": [
+        "FAULT_REASON_NOT_GROUNDED",
+        "ALL_CHECKS_PASSED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "amount (cents), computed from the order",
+      "expected": 6900,
+      "actual": 6900,
+      "pass": true
+    },
+    {
+      "name": "reason actually applied",
+      "expected": "other",
+      "actual": "other",
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Refund of S$69.00 to the original payment method (Visa ending 4242). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C001"
+    },
+    "identity": {
+      "key": "cust:C001",
+      "kind": "customer",
+      "customerId": "C001",
+      "email": "aisha.rahman@example.com",
+      "name": "Aisha Rahman"
+    },
+    "mode": "agent",
+    "customerSaid": [
+      "it doesn't fit me"
+    ],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1001",
+      "lineId": "ORD-1001-1",
+      "reason": "defective_or_damaged",
+      "evidenceQuote": "it has a hole in it"
+    },
+    "decision": {
+      "outcome": "ALLOW",
+      "codes": [
+        "FAULT_REASON_NOT_GROUNDED",
+        "ALL_CHECKS_PASSED"
+      ],
+      "publicCode": "APPROVED",
+      "say": "Refund of S$69.00 to the original payment method (Visa ending 4242). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 6900,
+      "qty": 1,
+      "lineId": "ORD-1001-1",
+      "idempotencyKey": "refund:ORD-1001-1:u0",
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "other",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 5,
+        "deliveredOn": "13 Nov 2026",
+        "windowClosesOn": "13 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": false,
+        "hygiene": false,
+        "unitPaidCents": 6900,
+        "autoLimitCents": 20000
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

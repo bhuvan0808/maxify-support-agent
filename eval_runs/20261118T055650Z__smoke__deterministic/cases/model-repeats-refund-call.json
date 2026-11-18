@@ -1,0 +1,112 @@
+{
+  "id": "model-repeats-refund-call",
+  "guards": "Model calls the refund tool three times in one turn",
+  "pass": true,
+  "checks": [
+    {
+      "name": "new actions this turn",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    },
+    {
+      "name": "reply must match /S\\$69\\.00/",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "turn": {
+      "traceId": "trace-1",
+      "conversationId": "cust:C001#default",
+      "reply": "Your refund of S$69.00 has been issued, reference ACT-000001.",
+      "actions": [
+        {
+          "type": "refund",
+          "id": "ACT-000001",
+          "status": "executed",
+          "orderId": "ORD-1001",
+          "lineId": "ORD-1001-1",
+          "amountCents": 6900,
+          "amount": "S$69.00",
+          "priority": null,
+          "category": null,
+          "reference": "RFND-000001",
+          "detail": "Refund of S$69.00 for 1 unit(s) of ORD-1001-1 to Visa ending 4242"
+        }
+      ],
+      "duplicatesRecognised": [],
+      "notices": []
+    },
+    "modelCalls": 3,
+    "ledger": {
+      "ledgerOrders": [
+        {
+          "order_id": "ORD-1011",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        },
+        {
+          "order_id": "ORD-1012",
+          "paid_cents": 7400,
+          "refunded_cents": 6900
+        },
+        {
+          "order_id": "ORD-1013",
+          "paid_cents": 9900,
+          "refunded_cents": 9900
+        },
+        {
+          "order_id": "ORD-1014",
+          "paid_cents": 11900,
+          "refunded_cents": 11900
+        },
+        {
+          "order_id": "ORD-1018",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        }
+      ],
+      "executed": [
+        {
+          "id": "ACT-000001",
+          "idempotency_key": "refund:ORD-1001-1:u0",
+          "amount_cents": 6900,
+          "origin": "agent"
+        }
+      ],
+      "auditEvents": 10
+    }
+  }
+}

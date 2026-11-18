@@ -1,0 +1,146 @@
+{
+  "id": "gate-human-approved-cannot-exceed-quantity",
+  "guards": "Approval mode refunds more units than were bought",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 6,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code QUANTITY_NOT_AVAILABLE",
+      "expected": "contains \"QUANTITY_NOT_AVAILABLE\"",
+      "actual": [
+        "QUANTITY_NOT_AVAILABLE"
+      ],
+      "pass": true
+    },
+    {
+      "name": "no idempotency key unless allowed (nothing can execute)",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Only 2 of this item can still be returned.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C002"
+    },
+    "identity": {
+      "key": "cust:C002",
+      "kind": "customer",
+      "customerId": "C002",
+      "email": "weijie.tan@example.com",
+      "name": "Wei Jie Tan"
+    },
+    "mode": "human_approved",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1007",
+      "lineId": "ORD-1007-1",
+      "reason": "changed_mind",
+      "qty": 5
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "QUANTITY_NOT_AVAILABLE"
+      ],
+      "publicCode": "QUANTITY_NOT_AVAILABLE",
+      "say": "Only 2 of this item can still be returned.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-1007-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "human_approved",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 2,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

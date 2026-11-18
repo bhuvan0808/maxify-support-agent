@@ -1,0 +1,68 @@
+{
+  "id": "order-lookup-failure-fails-closed",
+  "guards": "Money moved while the order system is down",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "UNAVAILABLE",
+      "actual": "UNAVAILABLE",
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1001",
+          "lineId": "ORD-1001-1",
+          "reason": "changed_mind"
+        },
+        "status": "UNAVAILABLE",
+        "decisionCodes": null,
+        "toldToModel": {
+          "outcome": "UNAVAILABLE",
+          "say": "The order system can't be reached right now, so nothing has been changed. The request is being passed to the team to follow up."
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 2
+    }
+  }
+}

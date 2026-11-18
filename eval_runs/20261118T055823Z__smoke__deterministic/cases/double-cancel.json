@@ -1,0 +1,146 @@
+{
+  "id": "double-cancel",
+  "guards": "Same cancellation requested twice refunds twice",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "EXECUTED",
+      "actual": "EXECUTED",
+      "pass": true
+    },
+    {
+      "name": "step 1 amount (cents)",
+      "expected": 14630,
+      "actual": 14630,
+      "pass": true
+    },
+    {
+      "name": "step 2 outcome",
+      "expected": "ALREADY_DONE",
+      "actual": "ALREADY_DONE",
+      "pass": true
+    },
+    {
+      "name": "step 2 reason code",
+      "expected": "ALREADY_CANCELLED",
+      "actual": [
+        "ALREADY_CANCELLED",
+        "ALREADY_CANCELLED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "cancellation",
+          "orderId": "ORD-1016"
+        },
+        "status": "EXECUTED",
+        "decisionCodes": [
+          "ALL_CHECKS_PASSED"
+        ],
+        "toldToModel": {
+          "outcome": "EXECUTED",
+          "action": "cancellation",
+          "reference": "ACT-000001",
+          "order_id": "ORD-1016",
+          "amount": "S$146.30",
+          "refunded_to": "PayNow",
+          "say": "Order ORD-1016 is cancelled and S$146.30 is being refunded to the original payment method (PayNow). It usually shows within 5 to 10 business days. Reference ACT-000001."
+        },
+        "actionId": "ACT-000001",
+        "escalationId": null
+      },
+      {
+        "proposal": {
+          "type": "cancellation",
+          "orderId": "ORD-1016"
+        },
+        "status": "ALREADY_DONE",
+        "decisionCodes": [
+          "ALREADY_CANCELLED"
+        ],
+        "toldToModel": {
+          "outcome": "ALREADY_DONE",
+          "code": "ALREADY_CANCELLED",
+          "reference": "ACT-000001",
+          "say": "Order ORD-1016 was already cancelled on 18 Nov 2026 (reference ACT-000001) and S$146.30 was refunded to PayNow. Nothing further is needed.",
+          "note": "This is a repeat of something already handled. Nothing new was done."
+        },
+        "actionId": "ACT-000001",
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [
+        {
+          "order_id": "ORD-1011",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        },
+        {
+          "order_id": "ORD-1012",
+          "paid_cents": 7400,
+          "refunded_cents": 6900
+        },
+        {
+          "order_id": "ORD-1013",
+          "paid_cents": 9900,
+          "refunded_cents": 9900
+        },
+        {
+          "order_id": "ORD-1014",
+          "paid_cents": 11900,
+          "refunded_cents": 11900
+        },
+        {
+          "order_id": "ORD-1018",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        }
+      ],
+      "executed": [
+        {
+          "id": "ACT-000001",
+          "idempotency_key": "cancellation:ORD-1016",
+          "amount_cents": 14630,
+          "origin": "agent"
+        }
+      ],
+      "auditEvents": 6
+    }
+  }
+}

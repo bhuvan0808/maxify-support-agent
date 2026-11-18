@@ -22,7 +22,8 @@
     "eval:live": "tsx evals/run.ts --suite live",
     "dev": "wrangler dev",
     "deploy": "node scripts/deploy.mjs",
-    "package": "node scripts/package.mjs"
+    "package": "node scripts/package.mjs",
+    "eval:smoke": "tsx evals/smoke.ts"
   },
   "dependencies": {
     "hono": "^4.13.19",

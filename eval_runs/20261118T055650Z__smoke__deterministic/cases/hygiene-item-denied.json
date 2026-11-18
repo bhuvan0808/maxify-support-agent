@@ -1,0 +1,83 @@
+{
+  "id": "hygiene-item-denied",
+  "guards": "Returning worn hygiene goods",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "HYGIENE_ITEM_NOT_RETURNABLE",
+      "actual": [
+        "HYGIENE_ITEM_NOT_RETURNABLE",
+        "HYGIENE_ITEM_NOT_RETURNABLE"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1010",
+          "lineId": "ORD-1010-1",
+          "reason": "changed_mind"
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "HYGIENE_ITEM_NOT_RETURNABLE"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "HYGIENE_ITEM_NOT_RETURNABLE",
+          "say": "Bamboo Crew Socks (3-pack) is a hygiene item, so for health reasons it can't be returned or exchanged unless it is faulty.",
+          "alternatives": [
+            "If the item is faulty, describe the fault and our team will look into it."
+          ]
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 2
+    }
+  }
+}

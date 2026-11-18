@@ -1,0 +1,147 @@
+{
+  "id": "gate-foreign-order-indistinguishable-from-missing",
+  "guards": "Order numbers can be probed: the reply differs for 'exists but not yours' and 'does not exist'",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 12,
+  "criteria": [
+    {
+      "name": "same outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "same customer-safe code",
+      "expected": "ORDER_NOT_FOUND",
+      "actual": "ORDER_NOT_FOUND",
+      "pass": true
+    },
+    {
+      "name": "same customer-facing text",
+      "expected": "I couldn't find order ORD-X under this customer's details.",
+      "actual": "I couldn't find order ORD-X under this customer's details.",
+      "pass": true
+    },
+    {
+      "name": "same hint to the model",
+      "expected": "Ask the customer to check the order number. Do not act on it.",
+      "actual": "Ask the customer to check the order number. Do not act on it.",
+      "pass": true
+    },
+    {
+      "name": "internally recorded as someone else's order",
+      "expected": "contains \"ORDER_NOT_OWNED\"",
+      "actual": [
+        "ORDER_NOT_OWNED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "the probe is recorded as a risk event, once",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "foreign": {
+      "outcome": "DENY",
+      "codes": [
+        "ORDER_NOT_OWNED"
+      ],
+      "publicCode": "ORDER_NOT_FOUND",
+      "say": "I couldn't find order ORD-1005 under this customer's details.",
+      "alternatives": [],
+      "hint": "Ask the customer to check the order number. Do not act on it.",
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-1005-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "elevated"
+      }
+    },
+    "missing": {
+      "outcome": "DENY",
+      "codes": [
+        "ORDER_NOT_FOUND"
+      ],
+      "publicCode": "ORDER_NOT_FOUND",
+      "say": "I couldn't find order ORD-9999 under this customer's details.",
+      "alternatives": [],
+      "hint": "Ask the customer to check the order number. Do not act on it.",
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-9999-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "elevated"
+      }
+    },
+    "riskEvents": [
+      {
+        "customer_key": "cust:C001",
+        "kind": "ownership_violation",
+        "detail": "{\"orderId\":\"ORD-1005\"}"
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@
 
 A customer-support agent for a fictional Singapore apparel store, **Tembusu & Co.** It answers questions about orders, products and policy, and handles refunds, exchanges and cancellations. A language model reads the conversation and *proposes* actions; a deterministic "Money Gate" written in plain code decides each one, executes it, or sends it to a human approver, and every step is written to a tamper-evident audit log.
 
-Live demo: LIVE_URL_PLACEHOLDER
+Live demo: https://maxify-support-agent.coue-mcp.workers.dev/ (chat) and https://maxify-support-agent.coue-mcp.workers.dev/console (human approval console; needs the ADMIN_API_KEY of the deployment)
 
 | Read this | For |
 |---|---|

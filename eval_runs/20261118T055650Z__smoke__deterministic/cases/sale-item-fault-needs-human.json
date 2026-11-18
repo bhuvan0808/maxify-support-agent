@@ -1,0 +1,96 @@
+{
+  "id": "sale-item-fault-needs-human",
+  "guards": "Unverified fault claim unlocking a larger refund on a sale item",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "ESCALATED",
+      "actual": "ESCALATED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "DEFECT_VERIFICATION_REQUIRED",
+      "actual": [
+        "DEFECT_VERIFICATION_REQUIRED",
+        "FAULT_CHECK_REQUIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "step 1 ticket queue",
+      "expected": "defect_verification",
+      "actual": "defect_verification",
+      "pass": true
+    },
+    {
+      "name": "step 1 ticket priority",
+      "expected": "P2",
+      "actual": "P2",
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1005",
+          "lineId": "ORD-1005-1",
+          "reason": "defective_or_damaged",
+          "evidenceQuote": "the zip on the jacket is broken"
+        },
+        "status": "ESCALATED",
+        "decisionCodes": [
+          "DEFECT_VERIFICATION_REQUIRED"
+        ],
+        "toldToModel": {
+          "outcome": "ESCALATED",
+          "code": "FAULT_CHECK_REQUIRED",
+          "reference": "ESC-000001",
+          "respond_by": "within one working day",
+          "say": "Fault claims are checked by our team before a refund or replacement is confirmed. They may ask for a photo of the problem. Reference ESC-000001. The team will reply within one working day.",
+          "note": "Nothing has been refunded or changed yet. Do not promise the result of the review."
+        },
+        "actionId": null,
+        "escalationId": "ESC-000001"
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 4
+    }
+  }
+}

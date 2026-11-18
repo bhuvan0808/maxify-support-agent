@@ -1,0 +1,147 @@
+{
+  "id": "gate-previously-declined-not-re-escalated",
+  "guards": "A customer re-asks until a different reviewer says yes",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 14,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code PREVIOUSLY_DECLINED",
+      "expected": "contains \"PREVIOUSLY_DECLINED\"",
+      "actual": [
+        "PREVIOUSLY_DECLINED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "no idempotency key unless allowed (nothing can execute)",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Our team reviewed a refund for this item on 18 Nov 2026 and wasn't able to approve it (reference ESC-000001).",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C003"
+    },
+    "identity": {
+      "key": "cust:C003",
+      "kind": "customer",
+      "customerId": "C003",
+      "email": "priya.nair@example.com",
+      "name": "Priya Nair"
+    },
+    "mode": "agent",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1008",
+      "lineId": "ORD-1008-1",
+      "reason": "changed_mind"
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "PREVIOUSLY_DECLINED"
+      ],
+      "publicCode": "PREVIOUSLY_DECLINED",
+      "say": "Our team reviewed a refund for this item on 18 Nov 2026 and wasn't able to approve it (reference ESC-000001).",
+      "alternatives": [
+        "If the customer has new information or disagrees, hand over to a human (complaint)."
+      ],
+      "hint": null,
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-1008-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low"
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

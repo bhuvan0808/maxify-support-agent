@@ -1,0 +1,151 @@
+{
+  "id": "double-refund-same-item",
+  "guards": "Same refund requested twice pays twice",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "EXECUTED",
+      "actual": "EXECUTED",
+      "pass": true
+    },
+    {
+      "name": "step 1 amount (cents)",
+      "expected": 6900,
+      "actual": 6900,
+      "pass": true
+    },
+    {
+      "name": "step 2 outcome",
+      "expected": "ALREADY_DONE",
+      "actual": "ALREADY_DONE",
+      "pass": true
+    },
+    {
+      "name": "step 2 reason code",
+      "expected": "ALREADY_REFUNDED",
+      "actual": [
+        "ALREADY_REFUNDED",
+        "ALREADY_REFUNDED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 1,
+      "actual": 1,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1001",
+          "lineId": "ORD-1001-1",
+          "reason": "wrong_size_or_fit"
+        },
+        "status": "EXECUTED",
+        "decisionCodes": [
+          "ALL_CHECKS_PASSED"
+        ],
+        "toldToModel": {
+          "outcome": "EXECUTED",
+          "action": "refund",
+          "reference": "ACT-000001",
+          "order_id": "ORD-1001",
+          "item": "Breezy Linen Shirt (M, White) x 1",
+          "amount": "S$69.00",
+          "refunded_to": "Visa ending 4242",
+          "say": "Refund of S$69.00 to the original payment method (Visa ending 4242). It usually shows within 5 to 10 business days. A prepaid return label has been emailed; the item should be sent back within 14 days. Reference ACT-000001."
+        },
+        "actionId": "ACT-000001",
+        "escalationId": null
+      },
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1001",
+          "lineId": "ORD-1001-1",
+          "reason": "wrong_size_or_fit"
+        },
+        "status": "ALREADY_DONE",
+        "decisionCodes": [
+          "ALREADY_REFUNDED"
+        ],
+        "toldToModel": {
+          "outcome": "ALREADY_DONE",
+          "code": "ALREADY_REFUNDED",
+          "reference": "ACT-000001",
+          "say": "This item already has a refund on record from 18 Nov 2026 (reference ACT-000001, S$69.00). Nothing further is due.",
+          "note": "This is a repeat of something already handled. Nothing new was done."
+        },
+        "actionId": "ACT-000001",
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [
+        {
+          "order_id": "ORD-1011",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        },
+        {
+          "order_id": "ORD-1012",
+          "paid_cents": 7400,
+          "refunded_cents": 6900
+        },
+        {
+          "order_id": "ORD-1013",
+          "paid_cents": 9900,
+          "refunded_cents": 9900
+        },
+        {
+          "order_id": "ORD-1014",
+          "paid_cents": 11900,
+          "refunded_cents": 11900
+        },
+        {
+          "order_id": "ORD-1018",
+          "paid_cents": 3490,
+          "refunded_cents": 2990
+        }
+      ],
+      "executed": [
+        {
+          "id": "ACT-000001",
+          "idempotency_key": "refund:ORD-1001-1:u0",
+          "amount_cents": 6900,
+          "origin": "agent"
+        }
+      ],
+      "auditEvents": 6
+    }
+  }
+}

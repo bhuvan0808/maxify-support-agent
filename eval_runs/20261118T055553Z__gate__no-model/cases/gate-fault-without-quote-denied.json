@@ -1,0 +1,155 @@
+{
+  "id": "gate-fault-without-quote-denied",
+  "guards": "A fault reason with no supporting words unlocks a sale refund",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 9,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code FAULT_DETAILS_REQUIRED",
+      "expected": "contains \"FAULT_DETAILS_REQUIRED\"",
+      "actual": [
+        "FAULT_DETAILS_REQUIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "no idempotency key unless allowed (nothing can execute)",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "To look into a fault we need the customer's own description of what is wrong with the item.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C002"
+    },
+    "identity": {
+      "key": "cust:C002",
+      "kind": "customer",
+      "customerId": "C002",
+      "email": "weijie.tan@example.com",
+      "name": "Wei Jie Tan"
+    },
+    "mode": "agent",
+    "customerSaid": [
+      "it's broken"
+    ],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1005",
+      "lineId": "ORD-1005-1",
+      "reason": "defective_or_damaged"
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "FAULT_DETAILS_REQUIRED"
+      ],
+      "publicCode": "FAULT_DETAILS_REQUIRED",
+      "say": "To look into a fault we need the customer's own description of what is wrong with the item.",
+      "alternatives": [],
+      "hint": "Ask the customer what exactly is wrong with the item. Then call again with customer_quote set to their exact words. Never describe a fault the customer has not described.",
+      "amountCents": 10430,
+      "qty": 1,
+      "lineId": "ORD-1005-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "defective_or_damaged",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 8,
+        "deliveredOn": "10 Nov 2026",
+        "windowClosesOn": "10 Dec 2026",
+        "inWindow": true,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": true,
+        "hygiene": false,
+        "unitPaidCents": 10430
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 2,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "id": "gate-statutory-fault-outside-window-to-human",
+  "guards": "A fault reported on day 60 is auto-denied, breaching the customer's statutory rights",
+  "status": "FAIL",
+  "failedCriteria": [
+    "no idempotency key unless allowed (nothing can execute)"
+  ],
+  "error": null,
+  "durationMs": 10,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "NEEDS_HUMAN",
+      "actual": "NEEDS_HUMAN",
+      "pass": true
+    },
+    {
+      "name": "reason code STATUTORY_DEFECT_CLAIM",
+      "expected": "contains \"STATUTORY_DEFECT_CLAIM\"",
+      "actual": [
+        "STATUTORY_DEFECT_CLAIM"
+      ],
+      "pass": true
+    },
+    {
+      "name": "amount (cents), computed from the order",
+      "expected": 13900,
+      "actual": 13900,
+      "pass": true
+    },
+    {
+      "name": "priority",
+      "expected": "P2",
+      "actual": "P2",
+      "pass": true
+    },
+    {
+      "name": "review queue",
+      "expected": "statutory_defect_claim",
+      "actual": "statutory_defect_claim",
+      "pass": true
+    },
+    {
+      "name": "no idempotency key unless allowed (nothing can execute)",
+      "expected": null,
+      "actual": "refund:ORD-1009-1:u0",
+      "pass": false
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "Fault claims are checked by our team before a refund or replacement is confirmed. They may ask for a photo of the problem.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C003"
+    },
+    "identity": {
+      "key": "cust:C003",
+      "kind": "customer",
+      "customerId": "C003",
+      "email": "priya.nair@example.com",
+      "name": "Priya Nair"
+    },
+    "mode": "agent",
+    "customerSaid": [
+      "the sweater has holes in the elbow"
+    ],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1009",
+      "lineId": "ORD-1009-1",
+      "reason": "defective_or_damaged",
+      "evidenceQuote": "the sweater has holes in the elbow"
+    },
+    "decision": {
+      "outcome": "NEEDS_HUMAN",
+      "codes": [
+        "STATUTORY_DEFECT_CLAIM"
+      ],
+      "publicCode": "FAULT_CHECK_REQUIRED",
+      "say": "Fault claims are checked by our team before a refund or replacement is confirmed. They may ask for a photo of the problem.",
+      "alternatives": [],
+      "hint": null,
+      "amountCents": 13900,
+      "qty": 1,
+      "lineId": "ORD-1009-1",
+      "idempotencyKey": "refund:ORD-1009-1:u0",
+      "priority": "P2",
+      "escalationCategory": "statutory_defect_claim",
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "defective_or_damaged",
+      "facts": {
+        "mode": "agent",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "low",
+        "daysSinceDelivery": 60,
+        "deliveredOn": "19 Sep 2026",
+        "windowClosesOn": "19 Oct 2026",
+        "inWindow": false,
+        "inStatutoryWindow": true,
+        "purchasedOnSale": false,
+        "hygiene": false,
+        "unitPaidCents": 13900,
+        "autoLimitCents": 20000
+      }
+    },
+    "risk": {
+      "tier": "low",
+      "signals": [],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 0
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

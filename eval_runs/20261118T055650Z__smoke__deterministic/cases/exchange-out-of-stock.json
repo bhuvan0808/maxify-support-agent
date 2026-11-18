@@ -1,0 +1,84 @@
+{
+  "id": "exchange-out-of-stock",
+  "guards": "Exchange promised for a variant with no stock",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "VARIANT_OUT_OF_STOCK",
+      "actual": [
+        "VARIANT_OUT_OF_STOCK",
+        "VARIANT_OUT_OF_STOCK"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "exchange",
+          "orderId": "ORD-1022",
+          "lineId": "ORD-1022-1",
+          "reason": "wrong_size_or_fit",
+          "newSize": "36"
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "VARIANT_OUT_OF_STOCK"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "VARIANT_OUT_OF_STOCK",
+          "say": "Tailored Chino Trousers in 36 Khaki is out of stock right now.",
+          "alternatives": [
+            "Other options in stock: 30 Khaki, 30 Navy, 32 Khaki, 32 Navy, 34 Navy, 36 Navy."
+          ]
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 2
+    }
+  }
+}

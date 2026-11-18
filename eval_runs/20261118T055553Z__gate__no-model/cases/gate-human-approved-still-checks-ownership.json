@@ -1,0 +1,147 @@
+{
+  "id": "gate-human-approved-still-checks-ownership",
+  "guards": "Approval mode bypasses ownership",
+  "status": "PASS",
+  "failedCriteria": [],
+  "error": null,
+  "durationMs": 10,
+  "criteria": [
+    {
+      "name": "outcome",
+      "expected": "DENY",
+      "actual": "DENY",
+      "pass": true
+    },
+    {
+      "name": "reason code ORDER_NOT_OWNED",
+      "expected": "contains \"ORDER_NOT_OWNED\"",
+      "actual": [
+        "ORDER_NOT_OWNED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "no idempotency key unless allowed (nothing can execute)",
+      "expected": null,
+      "actual": null,
+      "pass": true
+    },
+    {
+      "name": "evaluating moved no money",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    },
+    {
+      "name": "customer-facing text hides internal codes",
+      "expected": true,
+      "actual": "I couldn't find order ORD-1005 under this customer's details.",
+      "pass": true
+    },
+    {
+      "name": "INVARIANT money: per order, executed refunds + cancellations <= total paid",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT units: per line, refunded + exchanged <= quantity bought",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT ledger: reservation counters equal the live actions (failed actions released)",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT reconciliation: every executed refund has exactly one gateway refund of the same amount, and the gateway holds nothing the ledger lacks",
+      "expected": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "actual": {
+        "ledgerNotInGateway": [],
+        "gatewayNotInLedger": []
+      },
+      "pass": true
+    },
+    {
+      "name": "INVARIANT no action left pending",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "INVARIANT audit log hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "who": {
+      "customerId": "C001"
+    },
+    "identity": {
+      "key": "cust:C001",
+      "kind": "customer",
+      "customerId": "C001",
+      "email": "aisha.rahman@example.com",
+      "name": "Aisha Rahman"
+    },
+    "mode": "human_approved",
+    "customerSaid": [],
+    "proposal": {
+      "type": "refund",
+      "orderId": "ORD-1005",
+      "lineId": "ORD-1005-1",
+      "reason": "changed_mind"
+    },
+    "decision": {
+      "outcome": "DENY",
+      "codes": [
+        "ORDER_NOT_OWNED"
+      ],
+      "publicCode": "ORDER_NOT_FOUND",
+      "say": "I couldn't find order ORD-1005 under this customer's details.",
+      "alternatives": [],
+      "hint": "Ask the customer to check the order number. Do not act on it.",
+      "amountCents": 0,
+      "qty": 0,
+      "lineId": "ORD-1005-1",
+      "idempotencyKey": null,
+      "priority": null,
+      "escalationCategory": null,
+      "existingActionId": null,
+      "existingEscalationId": null,
+      "effectiveReason": "changed_mind",
+      "facts": {
+        "mode": "human_approved",
+        "policyVersion": "SG-2026.11",
+        "riskTier": "elevated"
+      }
+    },
+    "risk": {
+      "tier": "elevated",
+      "signals": [
+        "OTHER_CUSTOMERS_ORDER_PROBED(1 in 30d)"
+      ],
+      "refundRate": 0,
+      "stats": {
+        "deliveredOrders": 3,
+        "refundedOrders": 0,
+        "defectRefunds180d": 0,
+        "autoRefunds30d": 0,
+        "ownershipViolations30d": 1
+      }
+    },
+    "usage": {
+      "autoRefundedTodayCents": 0,
+      "customerAutoRefunds30d": 0
+    },
+    "ledgerAfterSetup": []
+  }
+}

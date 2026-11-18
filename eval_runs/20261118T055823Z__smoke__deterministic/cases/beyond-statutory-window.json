@@ -1,0 +1,81 @@
+{
+  "id": "beyond-statutory-window",
+  "guards": "Fault claim 200 days after delivery",
+  "pass": true,
+  "checks": [
+    {
+      "name": "step 1 outcome",
+      "expected": "DENIED",
+      "actual": "DENIED",
+      "pass": true
+    },
+    {
+      "name": "step 1 reason code",
+      "expected": "RETURN_WINDOW_EXPIRED",
+      "actual": [
+        "RETURN_WINDOW_EXPIRED",
+        "RETURN_WINDOW_EXPIRED"
+      ],
+      "pass": true
+    },
+    {
+      "name": "I1 ledger reservation equals live actions",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I2 refunded <= paid on every order",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I3 ledger and payment gateway agree",
+      "expected": [],
+      "actual": [],
+      "pass": true
+    },
+    {
+      "name": "I4 audit hash chains verify",
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "executed money actions",
+      "expected": 0,
+      "actual": 0,
+      "pass": true
+    }
+  ],
+  "evidence": {
+    "outcomes": [
+      {
+        "proposal": {
+          "type": "refund",
+          "orderId": "ORD-1017",
+          "lineId": "ORD-1017-1",
+          "reason": "defective_or_damaged",
+          "evidenceQuote": "the tee has a hole in it"
+        },
+        "status": "DENIED",
+        "decisionCodes": [
+          "RETURN_WINDOW_EXPIRED"
+        ],
+        "toldToModel": {
+          "outcome": "DENIED",
+          "code": "RETURN_WINDOW_EXPIRED",
+          "say": "This item was delivered on 2 May 2026 and our 30-day return window closed on 1 Jun 2026, so it can no longer be returned for a refund."
+        },
+        "actionId": null,
+        "escalationId": null
+      }
+    ],
+    "ledger": {
+      "ledgerOrders": [],
+      "executed": [],
+      "auditEvents": 2
+    }
+  }
+}
